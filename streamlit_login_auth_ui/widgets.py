@@ -251,12 +251,16 @@ class __login__:
         Creates the side navigaton bar
         """
         main_page_sidebar = st.sidebar.empty()
-        with main_page_sidebar:
-            selected_option = option_menu(
-                menu_title = 'Gets Started',
-                menu_icon = 'list-columns-reverse',
-                icons = ['box-arrow-in-right', 'person-plus','arrow-counterclockwise'],
-                options = ['Login', 'Create Account', 'Reset Password'],
+        # selected2 = option_menu(None, ["Login", "Register"],
+        #                 icons=['person-fill', 'person-plus-fill'],
+        #                 menu_icon="cast", default_index=0, orientation="horizontal")
+  
+        # with main_page_sidebar:
+        selected_option = option_menu(
+                menu_title = '',
+                menu_icon="cast", default_index=0, orientation="horizontal",
+                icons = ['box-arrow-in-right', 'person-plus'],
+                options = ['Login', 'Register'],
                 styles = {
                     "container": {"padding": "5px"},
                     "nav-link": {"font-size": "14px", "text-align": "left", "margin":"0px"}} )
@@ -298,7 +302,7 @@ class __login__:
                 json.dump([], auth_json)
 
         main_page_sidebar, selected_option = self.nav_sidebar()
-
+        
         if selected_option == 'Login':
             # self.animation()
             # self.login_widget()
@@ -309,7 +313,7 @@ class __login__:
                 if st.session_state['LOGGED_IN'] == False:
                     self.animation()
         
-        if selected_option == 'Create Account':
+        if selected_option == 'Register':
             self.sign_up_widget()
 
         if selected_option == 'Forgot Password?':
@@ -333,5 +337,3 @@ class __login__:
 
 # Author: Gauri Prabhakar
 # GitHub: https://github.com/GauriSP10/streamlit_login_auth_ui
-
-
