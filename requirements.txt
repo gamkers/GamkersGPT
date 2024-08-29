@@ -1,6 +1,5 @@
 google-generativeai
 langchain_google_genai
-numpy
 streamlit-cookies-manager
 streamlit-lottie
 streamlit-option-menu
@@ -31,3 +30,4 @@ pandasai
 langchain_groq
 matplotlib
 streamlit
+numpy 
