@@ -26,3 +26,8 @@ entrypoints==0.4
 executing==0.10.0
 filelock==3.6.0
 trycourier==4.4.0
+pandas==1.4.2
+pandasai
+langchain_groq
+matplotlib
+streamlit
