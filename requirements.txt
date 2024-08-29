@@ -1,6 +1,6 @@
 google-generativeai
 langchain_google_genai
-streamlit
+numpy
 streamlit-cookies-manager
 streamlit-lottie
 streamlit-option-menu
