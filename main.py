@@ -10,7 +10,7 @@ from io import StringIO, BytesIO
 
 
 # Initialize ChatGroq with API key from environment
-llm = ChatGroq(model_name='llama3-70b-8192', api_key='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')
+llm = ChatGroq(model_name='llama3-70b-8192', api_key='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')
 
 def read_file(uploaded_file):
     """
