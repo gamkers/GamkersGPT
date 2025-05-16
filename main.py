@@ -945,7 +945,7 @@ def main():
         .message-box {
             padding: 1rem;
             border-radius: 12px;
-            max-width: 70%;
+            max-width: 90%;
             min-width: 100px;
         }
 
