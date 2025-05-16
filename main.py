@@ -1110,7 +1110,7 @@ def main():
         <div class="main-header">
             <h1 style="font-size: 2.75rem; color: #e2e8f0; margin-bottom: 0.5rem;">CyberGeni AI</h1>
             <p style="color: #a0aec0; font-size: 1.1rem;">
-                AI-powered cybersecurity training assistant for ethical hacking education
+                AI-powered cybersecurity training assistant for ethical hacking education by gamkers
             </p>
             <div style="margin-top: 1rem; display: flex; align-items: center;">
                 <div class="status-indicator"></div>
