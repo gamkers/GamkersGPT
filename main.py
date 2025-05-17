@@ -12,6 +12,408 @@ from langchain_core.prompts import ChatPromptTemplate
 import requests
 import xml.etree.ElementTree as ET
 from st_on_hover_tabs import on_hover_tabs
+import streamlit.components.v1 as components
+from typing import List, Dict
+from langchain.chains import LLMChain, ConversationChain
+from langchain.prompts import PromptTemplate
+from langchain.memory import ConversationBufferMemory
+import json
+from docx import Document
+import subprocess
+import tempfile
+from streamlit_lottie import st_lottie
+
+
+class SecurityAnalysisApp:
+    def __init__(self):
+        self.chat_model = ChatGroq(
+            groq_api_key="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",
+            model_name="qwen-qwq-32b",
+            temperature=0.7,
+            max_tokens=None
+        )
+        
+        self.analysis_template = PromptTemplate(
+            input_variables=["code_chunk"],
+            template="""Analyze the following code for malicious indicators and security concerns.
+
+Code to analyze:
+{code_chunk}
+
+Provide a comprehensive analysis with a brief summary of findings and details for each category. Return your analysis in this exact JSON structure:
+{{
+    "summary": ["Brief overview of key findings and potential security implications"],
+    "sections": {{
+        "code_obfuscation_techniques": {{
+            "findings": [],
+            "description": "Brief explanation of identified obfuscation techniques and their implications"
+        }},
+        "suspicious_api_calls": {{
+            "findings": [],
+            "description": "Overview of concerning API calls and their potential security impact"
+        }},
+        "anti_analysis_mechanisms": {{
+            "findings": [],
+            "description": "Summary of detected anti-analysis features and their significance"
+        }},
+        "network_communication_patterns": {{
+            "findings": [],
+            "description": "Analysis of network-related code patterns and security concerns"
+        }},
+        "file_system_operations": {{
+            "findings": [],
+            "description": "Evaluation of file system interactions and associated risks"
+        }},
+        "potential_payload_analysis": {{
+            "findings": [],
+            "description": "Assessment of potential malicious payloads and their characteristics"
+        }}
+    }}
+}}
+
+Requirements:
+1. Ensure each field is populated with meaningful content
+2. Include a clear summary of overall findings
+3. Provide a brief description for each section
+4. List specific findings as bullet points in the findings arrays
+5. Use "None identified" in findings array if no indicators are found
+6. Keep descriptions concise and focused on security implications
+
+Your response should be ONLY the JSON object with no additional text."""
+        )
+        
+        self.binary_analysis_template = PromptTemplate(
+            input_variables=["strings_chunk"],
+            template="""Analyze the following strings extracted from a binary file for malicious indicators and security concerns.
+
+Extracted strings:
+{strings_chunk}
+
+Provide a comprehensive analysis with a brief summary of findings and details for each category. Return your analysis in this exact JSON structure:
+{{
+    "summary": ["Brief overview of key findings and potential security implications"],
+    "sections": {{
+        "suspicious_strings": {{
+            "findings": [],
+            "description": "Brief explanation of identified suspicious strings and their implications"
+        }},
+        "command_and_control_indicators": {{
+            "findings": [],
+            "description": "Overview of potential C2 indicators like URLs, IPs, or domain patterns"
+        }},
+        "anti_analysis_indicators": {{
+            "findings": [],
+            "description": "Summary of strings suggesting anti-analysis capabilities"
+        }},
+        "network_related_strings": {{
+            "findings": [],
+            "description": "Analysis of network-related strings and security concerns"
+        }},
+        "file_system_indicators": {{
+            "findings": [],
+            "description": "Evaluation of file system related strings and associated risks"
+        }},
+        "potential_malware_functionality": {{
+            "findings": [],
+            "description": "Assessment of strings indicating malicious functionality"
+        }}
+    }}
+}}
+
+Requirements:
+1. Ensure each field is populated with meaningful content
+2. Include a clear summary of overall findings
+3. Provide a brief description for each section
+4. List specific findings as bullet points in the findings arrays
+5. Use "None identified" in findings array if no indicators are found
+6. Keep descriptions concise and focused on security implications
+
+Your response should be ONLY the JSON object with no additional text."""
+        )
+        
+        self.analysis_chain = LLMChain(
+            llm=self.chat_model,
+            prompt=self.analysis_template,
+            verbose=True
+        )
+        
+        self.binary_analysis_chain = LLMChain(
+            llm=self.chat_model,
+            prompt=self.binary_analysis_template,
+            verbose=True
+        )
+        
+        self.chat_memory = ConversationBufferMemory()
+        self.conversation = ConversationChain(
+            llm=self.chat_model,
+            memory=self.chat_memory,
+            verbose=True
+        )
+
+    def clean_json_response(self, response: str) -> str:
+        try:
+            start = response.find('{')
+            end = response.rfind('}') + 1
+            if start != -1 and end != 0:
+                response = response[start:end]
+            response = response.replace('```json', '').replace('```', '')
+            return response.strip()
+        except Exception:
+            return response
+
+    def analyze_chunk(self, chunk: str, is_binary: bool = False) -> Dict:
+        try:
+            if is_binary:
+                response = self.binary_analysis_chain.predict(strings_chunk=chunk)
+            else:
+                response = self.analysis_chain.predict(code_chunk=chunk)
+                
+            cleaned_response = self.clean_json_response(response)
+            
+            try:
+                return json.loads(cleaned_response)
+            except json.JSONDecodeError as je:
+                return self._create_error_analysis("JSON parsing failed", str(je), is_binary)
+                
+        except Exception as e:
+            return self._create_error_analysis("Analysis failed", str(e), is_binary)
+
+    def _create_error_analysis(self, error_type: str, details: str, is_binary: bool = False) -> Dict:
+        if is_binary:
+            sections = [
+                "suspicious_strings",
+                "command_and_control_indicators",
+                "anti_analysis_indicators",
+                "network_related_strings",
+                "file_system_indicators",
+                "potential_malware_functionality"
+            ]
+        else:
+            sections = [
+                "code_obfuscation_techniques",
+                "suspicious_api_calls",
+                "anti_analysis_mechanisms",
+                "network_communication_patterns",
+                "file_system_operations",
+                "potential_payload_analysis"
+            ]
+            
+        return {
+            "error": f"{error_type}: {details}",
+            "summary": ["Analysis failed - " + error_type],
+            "sections": {section: {
+                "findings": ["Analysis failed"],
+                "description": "Analysis failed due to technical error"
+            } for section in sections}
+        }
+
+    def split_code_in_chunks(self, content: str, chunk_size: int = 12800) -> List[str]:
+        return [content[i:i + chunk_size] for i in range(0, len(content), chunk_size)]
+
+    def analyze_code(self, code_content: str) -> Dict:
+        chunks = self.split_code_in_chunks(code_content)
+        analyses = []
+        
+        progress_bar = st.progress(0)
+        status_text = st.empty()
+        
+        for i, chunk in enumerate(chunks, 1):
+            status_text.text(f"Analyzing chunk {i}/{len(chunks)}...")
+            analysis = self.analyze_chunk(chunk)
+            analyses.append(analysis)
+            progress_bar.progress(i/len(chunks))
+        
+        status_text.text("Analysis complete!")
+        progress_bar.empty()
+        
+        return self.combine_analyses(analyses)
+        
+
+    def extract_strings_from_binary(self, binary_data: bytes, min_length: int = 10) -> str:
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.exe') as temp_file:
+            temp_file.write(binary_data)
+            temp_file_path = temp_file.name
+
+        try:
+            try:
+                # Use 'strings' with a length filter if available
+                result = subprocess.run(['strings', '-n', str(min_length), temp_file_path],
+                                        capture_output=True, text=True, check=True)
+                extracted_strings = result.stdout
+            except (subprocess.SubprocessError, FileNotFoundError):
+                # Fallback: Extract printable ASCII strings manually
+                extracted_strings = self._extract_strings_manually(binary_data, min_length)
+
+            # Filter output (optional, e.g., extract only strings containing certain keywords)
+            filtered_strings = "\n".join(
+                line for line in extracted_strings.splitlines()
+                if re.search(r'[a-zA-Z0-9_]', line)  # Ensure meaningful content
+            )
+            
+            return " ".join(filtered_strings.splitlines())
+        finally:
+            try:
+                os.unlink(temp_file_path)
+            except:
+                pass
+
+    
+    def _extract_strings_manually(self, binary_data: bytes, min_length: int = 4) -> str:
+        strings = []
+        current_string = ""
+        
+        for byte in binary_data:
+            # Check if byte is printable ASCII
+            if 32 <= byte <= 126:  # Printable ASCII range
+                current_string += chr(byte)
+            else:
+                if len(current_string) >= min_length:
+                    strings.append(current_string)
+                current_string = ""
+                
+        # Add the last string if it meets the minimum length
+        if len(current_string) >= min_length:
+            strings.append(current_string)
+            
+        return "\n".join(strings)
+    
+    def analyze_binary(self, binary_data: bytes) -> Dict:
+        strings_content = self.extract_strings_from_binary(binary_data)
+        chunks = self.split_code_in_chunks(strings_content)
+        analyses = []
+        
+        progress_bar = st.progress(0)
+        status_text = st.empty()
+        
+        for i, chunk in enumerate(chunks, 1):
+            status_text.text(f"Analyzing binary chunk {i}/{len(chunks)}...")
+            analysis = self.analyze_chunk(chunk, is_binary=True)
+            analyses.append(analysis)
+            progress_bar.progress(i/len(chunks))
+        
+        status_text.text("Binary analysis complete!")
+        progress_bar.empty()
+        
+        return self.combine_analyses(analyses)
+
+    def combine_analyses(self, analyses: List[Dict]) -> Dict:
+        # Get all section keys from the first analysis
+        if not analyses:
+            return {
+                "summary": ["No analysis results available"],
+                "sections": {},
+                "errors": ["No analyses performed"]
+            }
+            
+        # Initialize combined structure with all possible sections
+        combined = {
+            "summary": set(),
+            "sections": {},
+            "errors": []
+        }
+        
+        # Initialize sections based on first analysis
+        if "sections" in analyses[0]:
+            for section in analyses[0]["sections"]:
+                combined["sections"][section] = {"findings": set(), "description": ""}
+        
+        for analysis in analyses:
+            if "error" in analysis:
+                combined["errors"].append(analysis["error"])
+            
+            if "summary" in analysis:
+                combined["summary"].update(analysis["summary"])
+            
+            if "sections" in analysis:
+                for section, content in analysis["sections"].items():
+                    if section not in combined["sections"]:
+                        combined["sections"][section] = {"findings": set(), "description": ""}
+                    
+                    if "findings" in content:
+                        combined["sections"][section]["findings"].update(content["findings"])
+                    
+                    if content.get("description") and not combined["sections"][section]["description"]:
+                        combined["sections"][section]["description"] = content["description"]
+
+        result = {
+            "summary": list(combined["summary"]),
+            "sections": {},
+            "errors": combined["errors"]
+        }
+
+        for section, content in combined["sections"].items():
+            findings = list(content["findings"])
+            if len(findings) > 1 and "Analysis failed" in findings:
+                findings.remove("Analysis failed")
+            
+            result["sections"][section] = {
+                "findings": findings,
+                "description": content["description"] or "No significant findings in this category"
+            }
+
+        return result
+
+    def create_analysis_report(self, analysis_results: Dict, title: str = "Security Analysis Report") -> str:
+        document = Document()
+        document.add_heading(title, 0)
+        
+        document.add_heading("Executive Summary", level=1)
+        for summary_point in analysis_results.get("summary", ["No summary available"]):
+            document.add_paragraph(summary_point, style='Body Text')
+        
+        for section_name, content in analysis_results.get("sections", {}).items():
+            heading_text = section_name.replace('_', ' ').title()
+            document.add_heading(heading_text, level=1)
+            
+            if content.get("description"):
+                document.add_paragraph(content["description"], style='Body Text')
+            
+            if content.get("findings"):
+                document.add_heading("Findings:", level=2)
+                for finding in content["findings"]:
+                    if finding != "None identified":
+                        document.add_paragraph(f"• {finding}", style='List Bullet')
+                    else:
+                        document.add_paragraph("No specific issues identified in this category.", style='Body Text')
+        
+        if analysis_results.get("errors"):
+            document.add_heading("Analysis Errors", level=1)
+            for error in analysis_results["errors"]:
+                document.add_paragraph(f"• {error}", style='List Bullet')
+        
+        report_filename = f"security_analysis_report_{os.getpid()}.docx"
+        document.save(report_filename)
+        return report_filename
+
+    def get_chat_response(self, user_input: str) -> str:
+        return self.conversation.predict(input=user_input+"Response should be short and crisp")
+
+def display_analysis_results(analysis: Dict):
+    st.header("Executive Summary")
+    for summary_point in analysis.get("summary", ["No summary available"]):
+        st.write(summary_point)
+    st.divider()
+
+    if analysis.get("errors"):
+        st.error("Analysis Errors")
+        for error in analysis["errors"]:
+            st.write(f"• {error}")
+        st.divider()
+
+    for section_name, content in analysis.get("sections", {}).items():
+        st.subheader(section_name.replace('_', ' ').title())
+        
+        if content.get("description"):
+            st.write(content["description"])
+        
+        if content.get("findings"):
+            st.write("Findings:")
+            for finding in content["findings"]:
+                st.write(f"• {finding}")
+        st.divider()
+
+
+
 class CyberSecurityAssistant:
     def __init__(self, groq_api_key):
         self.llm = ChatGroq(
@@ -806,6 +1208,10 @@ class CyberSecurityAssistant:
     
     
 def main():
+
+    if "app" not in st.session_state:
+        st.session_state.app = SecurityAnalysisApp()
+        st.session_state.messages = []
     
     st.set_page_config(
         page_title="CyberGeni AI", 
@@ -1129,309 +1535,6 @@ def main():
                 
     except Exception as e:
         st.error(f"Error initializing assistant: {e}")
-    # Sidebar
-    # with st.sidebar:
-    #     st.markdown("""
-    #         <h3 style="display: flex; align-items: center;">
-    #             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.5rem;">
-    #                 <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-    #                 <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-    #             </svg>
-    #             Cybersecurity Training
-    #         </h3>
-    #     """, unsafe_allow_html=True)
-        
-    #     # Initialize button with animation
-    #     if st.button("Initialize Assistant", key="init_assistant"):
-    #         try:
-    #             # Get API key from secrets.toml or environment variable
-    #             groq_api_key = "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"
-                
-    #             # Initialize the assistant
-    #             st.session_state.assistant = CyberSecurityAssistant(groq_api_key=groq_api_key)
-    #             st.success("CyberGeni initialized successfully!")
-                
-    #         except Exception as e:
-    #             st.error(f"Error initializing assistant: {e}")
-        
-    #     # Search tips and categories
-    #     st.markdown("""
-    #         <h3 style="display: flex; align-items: center; margin-top: 2rem;">
-    #             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.5rem;">
-    #                 <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
-    #             </svg>
-    #             Features & Categories
-    #         </h3>
-            
-    #         <div style="margin-top: 1rem;">
-    #             <div class="category-pill">Network Security</div>
-    #             <div class="category-pill">Web App Security</div>
-    #             <div class="category-pill">Encryption</div>
-    #             <div class="category-pill">Malware Analysis</div>
-    #             <div class="category-pill">Penetration Testing</div>
-    #             <div class="category-pill">Social Engineering</div>
-    #             <div class="category-pill">Cloud Security</div>
-    #             <div class="category-pill">IoT Security</div>
-    #         </div>
-            
-    #         <h3 style="display: flex; align-items: center; margin-top: 2rem;">
-    #             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.5rem;">
-    #                 <circle cx="11" cy="11" r="8"></circle>
-    #                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-    #             </svg>
-    #             New Features
-    #         </h3>
-            
-    #         <div style="background-color: #1a1e24; padding: 1.25rem; border-radius: 12px; margin-top: 0.75rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
-    #             <p style="font-weight: 600; margin-bottom: 0.75rem; color: #e2e8f0;">Try these new features:</p>
-    #             <ul style="margin-left: 0.75rem; padding-left: 1rem; color: #a0aec0;">
-    #                 <li style="margin-bottom: 0.5rem;">CVE Database Search</li>
-    #                 <li style="margin-bottom: 0.5rem;">Latest Hacker News</li>
-    #                 <li style="margin-bottom: 0.5rem;">Security Tool Commands</li>
-    #                 <li style="margin-bottom: 0.5rem;">Google Dorking Generator</li>
-    #             </ul>
-    #         </div>
-    #     """, unsafe_allow_html=True)
-        
-    #     # Clear conversation button
-    #     if st.button("Clear Conversation", key="clear_conv"):
-    #         st.session_state.messages = []
-    #         if st.session_state.assistant:
-    #             st.session_state.assistant.conversation_history = []
-    #         st.rerun()
-            
-    #     # Disclaimer
-    #     st.markdown("""
-    #         <div style="background-color: #7f1d1d; padding: 1rem; border-radius: 8px; margin-top: 2rem;">
-    #             <h4 style="color: #fee2e2; margin-top: 0;">⚠️ Educational Use Only</h4>
-    #             <p style="color: #fecaca; font-size: 0.85rem; margin-bottom: 0;">
-    #                 All information provided by CyberGeni is for educational purposes only. Always practice ethical hacking and only test systems you own or have explicit permission to test.
-    #             </p>
-    #         </div>
-    #     """, unsafe_allow_html=True)
-
-
-    #     st.markdown("### Tools")
-        
-    #     # Crypto Tools section in sidebar
-    #     with st.expander("Crypto Tools"):
-    #         crypto_op = st.radio("Operation", ["Encode/Decode", "Hash Analysis", "Encrypt/Decrypt"])
-            
-    #         if crypto_op == "Encode/Decode":
-    #             # Encoding/Decoding tool
-    #             encode_decode_op = st.radio("Action", ["Encode", "Decode"], horizontal=True)
-    #             format_type = st.selectbox("Format", ["base64", "hex", "url", "binary"])
-    #             input_data = st.text_area("Input Data", height=100)
-                
-    #             if st.button("Process", key="encode_decode_btn"):
-    #                 if st.session_state.assistant is None:
-    #                     st.warning("Please initialize assistant first")
-    #                 elif not input_data:
-    #                     st.warning("Please enter data to process")
-    #                 else:
-    #                     result = st.session_state.assistant.decode_or_encode_data(
-    #                         input_data, 
-    #                         encode_decode_op.lower(), 
-    #                         format_type
-    #                     )
-                        
-    #                     if isinstance(result, dict):
-    #                         st.code(result["result"], language="text")
-    #                         st.success(result["explanation"])
-    #                     else:
-    #                         st.error(result)
-            
-    #         elif crypto_op == "Hash Analysis":
-    #             # Hash Analysis Tool
-    #             hash_input = st.text_area("Enter Hash to Analyze", height=80)
-                
-    #             if st.button("Analyze Hash", key="analyze_hash_btn"):
-    #                 if st.session_state.assistant is None:
-    #                     st.warning("Please initialize assistant first")
-    #                 elif not hash_input:
-    #                     st.warning("Please enter a hash to analyze")
-    #                 else:
-    #                     result = st.session_state.assistant.hash_analyzer(hash_input)
-                        
-    #                     if isinstance(result, dict):
-    #                         st.markdown(f"""
-    #                         **Hash Type:** {result["hash_type"]}\n
-    #                         **Length:** {result["length"]}\n
-    #                         **Security Strength:** {result["strength"]}\n
-    #                         **Valid Format:** {result["valid_format"]}\n
-    #                         **Additional Info:** {result["additional_info"]}
-    #                         """)
-    #                     else:
-    #                         st.error(result)
-            
-    #         elif crypto_op == "Encrypt/Decrypt":
-    #             # Encryption/Decryption Tool
-    #             crypto_action = st.radio("Action", ["Encrypt", "Decrypt"], horizontal=True)
-    #             algorithm = st.selectbox("Algorithm", ["aes", "des", "chacha20"])
-    #             crypto_input = st.text_area("Input Data", height=80)
-                
-    #             key_col, iv_col = st.columns(2)
-    #             with key_col:
-    #                 key_input = st.text_input("Key (Base64, leave empty to generate)")
-    #             with iv_col:
-    #                 iv_input = st.text_input("IV/Nonce (Base64, leave empty to generate)")
-                
-    #             if st.button("Process", key="crypto_process_btn"):
-    #                 if st.session_state.assistant is None:
-    #                     st.warning("Please initialize assistant first")
-    #                 elif not crypto_input:
-    #                     st.warning("Please enter data to process")
-    #                 else:
-    #                     result = st.session_state.assistant.decrypt_or_encrypt_data(
-    #                         crypto_input,
-    #                         crypto_action.lower(),
-    #                         algorithm,
-    #                         key_input if key_input else None,
-    #                         iv_input if iv_input else None
-    #                     )
-                        
-    #                     if isinstance(result, dict):
-    #                         st.code(result["result"], language="text")
-                            
-    #                         if crypto_action.lower() == "encrypt":
-    #                             st.info("Save these values for decryption:")
-    #                             st.code(f"Key: {result['key']}\nIV: {result['iv']}", language="text")
-    #                     else:
-    #                         st.error(result)
-        
-    #     # Security Assessment Tools
-    #     with st.expander("Security Assessment"):
-    #         assessment_type = st.selectbox(
-    #             "Assessment Type",
-    #             ["Vulnerability Assessment", "Code Security Analysis", "Network Traffic Analysis"]
-    #         )
-            
-    #         if assessment_type == "Vulnerability Assessment":
-    #             system_desc = st.text_area("Describe the system to assess", height=100)
-                
-    #             if st.button("Generate Assessment", key="vuln_assess_btn"):
-    #                 if st.session_state.assistant is None:
-    #                     st.warning("Please initialize assistant first")
-    #                 elif not system_desc:
-    #                     st.warning("Please describe the system to assess")
-    #                 else:
-    #                     with st.spinner("Generating vulnerability assessment..."):
-    #                         result = st.session_state.assistant.vulnerability_assessment(system_desc)
-    #                         st.markdown(result)
-            
-    #         elif assessment_type == "Code Security Analysis":
-    #             code_lang = st.selectbox("Language", ["python", "javascript", "php", "java", "html", "css"])
-    #             code_snippet = st.text_area("Paste code to analyze", height=150)
-                
-    #             if st.button("Analyze Code", key="code_analysis_btn"):
-    #                 if st.session_state.assistant is None:
-    #                     st.warning("Please initialize assistant first")
-    #                 elif not code_snippet:
-    #                     st.warning("Please enter code to analyze")
-    #                 else:
-    #                     with st.spinner("Analyzing code security..."):
-    #                         result = st.session_state.assistant.analyze_code_security(code_snippet, code_lang)
-    #                         st.markdown(result)
-            
-    #         elif assessment_type == "Network Traffic Analysis":
-    #             traffic_type = st.selectbox("Traffic Type", ["http", "dns", "tcp", "ssl", "smb"])
-    #             traffic_desc = st.text_area("Describe traffic pattern or paste sample data", height=100)
-                
-    #             if st.button("Analyze Traffic", key="traffic_analysis_btn"):
-    #                 if st.session_state.assistant is None:
-    #                     st.warning("Please initialize assistant first")
-    #                 else:
-    #                     with st.spinner("Analyzing network traffic patterns..."):
-    #                         result = st.session_state.assistant.analyze_network_traffic(
-    #                             traffic_desc if traffic_desc else None,
-    #                             traffic_type
-    #                         )
-    #                         st.markdown(result)
-        
-    #     # Training Materials section
-    #     with st.expander("Training Materials"):
-    #         training_type = st.selectbox(
-    #             "Material Type",
-    #             ["Security Concept Explanation", "CTF Challenge", "Incident Response Plan", "Security Policy"]
-    #         )
-            
-    #         if training_type == "Security Concept Explanation":
-    #             concept = st.text_input("Enter security concept", placeholder="Example: XSS, CSRF, JWT")
-                
-    #             if st.button("Generate Explanation", key="concept_explain_btn"):
-    #                 if st.session_state.assistant is None:
-    #                     st.warning("Please initialize assistant first")
-    #                 elif not concept:
-    #                     st.warning("Please enter a security concept")
-    #                 else:
-    #                     with st.spinner(f"Generating explanation for {concept}..."):
-    #                         result = st.session_state.assistant.explain_security_concept(concept)
-    #                         st.markdown(result)
-            
-    #         elif training_type == "CTF Challenge":
-    #             ctf_difficulty = st.select_slider(
-    #                 "Difficulty", 
-    #                 options=["easy", "medium", "hard"],
-    #                 value="medium"
-    #             )
-    #             ctf_category = st.selectbox(
-    #                 "Category",
-    #                 ["web", "crypto", "forensics", "pwn", "reverse", "misc"]
-    #             )
-                
-    #             if st.button("Generate Challenge", key="ctf_gen_btn"):
-    #                 if st.session_state.assistant is None:
-    #                     st.warning("Please initialize assistant first")
-    #                 else:
-    #                     with st.spinner(f"Generating {ctf_difficulty} {ctf_category} CTF challenge..."):
-    #                         result = st.session_state.assistant.generate_ctf_challenge(
-    #                             ctf_difficulty,
-    #                             ctf_category
-    #                         )
-    #                         st.markdown(result)
-            
-    #         elif training_type == "Incident Response Plan":
-    #             ir_incident = st.selectbox(
-    #                 "Incident Type",
-    #                 ["data breach", "ransomware", "DDoS", "insider threat", "phishing"]
-    #             )
-    #             ir_size = st.selectbox("Organization Size", ["small", "medium", "large"])
-                
-    #             if st.button("Generate IR Plan", key="ir_gen_btn"):
-    #                 if st.session_state.assistant is None:
-    #                     st.warning("Please initialize assistant first")
-    #                 else:
-    #                     with st.spinner(f"Generating incident response plan..."):
-    #                         result = st.session_state.assistant.generate_incident_response_plan(
-    #                             ir_incident,
-    #                             ir_size
-    #                         )
-    #                         st.markdown(result)
-            
-    #         elif training_type == "Security Policy":
-    #             policy_org = st.selectbox(
-    #                 "Organization Type",
-    #                 ["healthcare", "finance", "education", "retail", "government", "technology"]
-    #             )
-    #             policy_focus = st.selectbox(
-    #                 "Policy Focus",
-    #                 ["network", "data", "access control", "incident response", "BYOD", "cloud"]
-    #             )
-                
-    #             if st.button("Generate Policy", key="policy_gen_btn"):
-    #                 if st.session_state.assistant is None:
-    #                     st.warning("Please initialize assistant first")
-    #                 else:
-    #                     with st.spinner(f"Generating security policy..."):
-    #                         result = st.session_state.assistant.generate_security_policy(
-    #                             policy_org,
-    #                             policy_focus
-    #                         )
-    #                         st.markdown(result)
-
-
-    
-
 
     def chat():    
         # Main content - Tabs system
@@ -1760,8 +1863,8 @@ def main():
         pass
     with st.sidebar:
         tabs = on_hover_tabs(
-            tabName=['Encryption', 'chat', 'Security Assessment','Training'],
-            iconName=['code', 'chat', 'info','home'],
+            tabName=['Encryption', 'chat', 'Security Assessment','Training','Malware Analysis'],
+            iconName=['code', 'chat', 'info','home','computer'],
             styles={
                         'navtab': {
                             'background-color': 'black',
@@ -2003,7 +2106,78 @@ def main():
                                 policy_focus
                             )
                             st.markdown(result)
+    elif tabs == 'Malware Analysis':
+        st.title("Malware Analyzer")
+        tab1, tab2, tab3 = st.tabs(["📝 Paste Code", "📁 Upload Source File", "💾 Upload Binary"])
 
+        with tab1:
+            code_input = st.text_area("Paste your code here:", height=300)
+            if st.button("🔍 Analyze Code", key="analyze_pasted") and code_input:
+                with st.spinner("🔄 Analyzing code..."):
+                    analysis_results = st.session_state.app.analyze_code(code_input)
+                    display_analysis_results(analysis_results)
+                    report_filename = st.session_state.app.create_analysis_report(analysis_results)
+                    with open(report_filename, "rb") as file:
+                        st.download_button(
+                            label="📥 Download Analysis Report",
+                            data=file,
+                            file_name=report_filename,
+                            mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                        )
+                    os.remove(report_filename)
+
+        with tab2:
+            uploaded_file = st.file_uploader("Choose a source code file", type=['py', 'js', 'java', 'cpp', 'cs', 'php', 'rb'], key="code_file")
+            if st.button("🔍 Analyze Source File", key="analyze_source") and uploaded_file:
+                with st.spinner("🔄 Analyzing source file..."):
+                    code_content = uploaded_file.read().decode()
+                    analysis_results = st.session_state.app.analyze_code(code_content)
+                    display_analysis_results(analysis_results)
+                    report_filename = st.session_state.app.create_analysis_report(analysis_results)
+                    with open(report_filename, "rb") as file:
+                        st.download_button(
+                            label="📥 Download Analysis Report",
+                            data=file,
+                            file_name=report_filename,
+                            mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                        )
+                    os.remove(report_filename)
+        
+        with tab3:
+            st.write("Upload a binary file (.exe) for security analysis")
+            uploaded_binary = st.file_uploader("Choose a binary file", type=['exe'], key="binary_file")
+            
+            if uploaded_binary:
+                st.info("Binary analysis will extract strings from the executable and analyze them for security indicators.")
+            
+            if st.button("🔍 Analyze Binary", key="analyze_binary") and uploaded_binary:
+                with st.spinner("🔄 Extracting strings and analyzing binary..."):
+                    binary_data = uploaded_binary.read()
+                    
+                    # Create expandable section to show extracted strings
+                    with st.expander("Extracted Strings Preview"):
+                        extracted_strings = st.session_state.app.extract_strings_from_binary(binary_data)
+                        st.text_area("Strings from binary", value=extracted_strings[:10000] + 
+                                    ("\n\n[Truncated...]" if len(extracted_strings) > 10000 else ""), 
+                                    height=300, disabled=True)
+                    
+                    analysis_results = st.session_state.app.analyze_binary(binary_data)
+                    st.subheader("Binary Analysis Results")
+                    display_analysis_results(analysis_results)
+                    
+                    report_filename = st.session_state.app.create_analysis_report(
+                        analysis_results, 
+                        title=f"Binary Security Analysis Report - {uploaded_binary.name}"
+                    )
+                    
+                    with open(report_filename, "rb") as file:
+                        st.download_button(
+                            label="📥 Download Binary Analysis Report",
+                            data=file,
+                            file_name=report_filename,
+                            mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                        )
+                    os.remove(report_filename)
 
 
 if __name__ == "__main__":
