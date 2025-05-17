@@ -1199,6 +1199,225 @@ def main():
                 </p>
             </div>
         """, unsafe_allow_html=True)
+
+
+        st.markdown("### Tools")
+        
+        # Crypto Tools section in sidebar
+        with st.expander("Crypto Tools"):
+            crypto_op = st.radio("Operation", ["Encode/Decode", "Hash Analysis", "Encrypt/Decrypt"])
+            
+            if crypto_op == "Encode/Decode":
+                # Encoding/Decoding tool
+                encode_decode_op = st.radio("Action", ["Encode", "Decode"], horizontal=True)
+                format_type = st.selectbox("Format", ["base64", "hex", "url", "binary"])
+                input_data = st.text_area("Input Data", height=100)
+                
+                if st.button("Process", key="encode_decode_btn"):
+                    if st.session_state.assistant is None:
+                        st.warning("Please initialize assistant first")
+                    elif not input_data:
+                        st.warning("Please enter data to process")
+                    else:
+                        result = st.session_state.assistant.decode_or_encode_data(
+                            input_data, 
+                            encode_decode_op.lower(), 
+                            format_type
+                        )
+                        
+                        if isinstance(result, dict):
+                            st.code(result["result"], language="text")
+                            st.success(result["explanation"])
+                        else:
+                            st.error(result)
+            
+            elif crypto_op == "Hash Analysis":
+                # Hash Analysis Tool
+                hash_input = st.text_area("Enter Hash to Analyze", height=80)
+                
+                if st.button("Analyze Hash", key="analyze_hash_btn"):
+                    if st.session_state.assistant is None:
+                        st.warning("Please initialize assistant first")
+                    elif not hash_input:
+                        st.warning("Please enter a hash to analyze")
+                    else:
+                        result = st.session_state.assistant.hash_analyzer(hash_input)
+                        
+                        if isinstance(result, dict):
+                            st.markdown(f"""
+                            **Hash Type:** {result["hash_type"]}\n
+                            **Length:** {result["length"]}\n
+                            **Security Strength:** {result["strength"]}\n
+                            **Valid Format:** {result["valid_format"]}\n
+                            **Additional Info:** {result["additional_info"]}
+                            """)
+                        else:
+                            st.error(result)
+            
+            elif crypto_op == "Encrypt/Decrypt":
+                # Encryption/Decryption Tool
+                crypto_action = st.radio("Action", ["Encrypt", "Decrypt"], horizontal=True)
+                algorithm = st.selectbox("Algorithm", ["aes", "des", "chacha20"])
+                crypto_input = st.text_area("Input Data", height=80)
+                
+                key_col, iv_col = st.columns(2)
+                with key_col:
+                    key_input = st.text_input("Key (Base64, leave empty to generate)")
+                with iv_col:
+                    iv_input = st.text_input("IV/Nonce (Base64, leave empty to generate)")
+                
+                if st.button("Process", key="crypto_process_btn"):
+                    if st.session_state.assistant is None:
+                        st.warning("Please initialize assistant first")
+                    elif not crypto_input:
+                        st.warning("Please enter data to process")
+                    else:
+                        result = st.session_state.assistant.decrypt_or_encrypt_data(
+                            crypto_input,
+                            crypto_action.lower(),
+                            algorithm,
+                            key_input if key_input else None,
+                            iv_input if iv_input else None
+                        )
+                        
+                        if isinstance(result, dict):
+                            st.code(result["result"], language="text")
+                            
+                            if crypto_action.lower() == "encrypt":
+                                st.info("Save these values for decryption:")
+                                st.code(f"Key: {result['key']}\nIV: {result['iv']}", language="text")
+                        else:
+                            st.error(result)
+        
+        # Security Assessment Tools
+        with st.expander("Security Assessment"):
+            assessment_type = st.selectbox(
+                "Assessment Type",
+                ["Vulnerability Assessment", "Code Security Analysis", "Network Traffic Analysis"]
+            )
+            
+            if assessment_type == "Vulnerability Assessment":
+                system_desc = st.text_area("Describe the system to assess", height=100)
+                
+                if st.button("Generate Assessment", key="vuln_assess_btn"):
+                    if st.session_state.assistant is None:
+                        st.warning("Please initialize assistant first")
+                    elif not system_desc:
+                        st.warning("Please describe the system to assess")
+                    else:
+                        with st.spinner("Generating vulnerability assessment..."):
+                            result = st.session_state.assistant.vulnerability_assessment(system_desc)
+                            st.markdown(result)
+            
+            elif assessment_type == "Code Security Analysis":
+                code_lang = st.selectbox("Language", ["python", "javascript", "php", "java", "html", "css"])
+                code_snippet = st.text_area("Paste code to analyze", height=150)
+                
+                if st.button("Analyze Code", key="code_analysis_btn"):
+                    if st.session_state.assistant is None:
+                        st.warning("Please initialize assistant first")
+                    elif not code_snippet:
+                        st.warning("Please enter code to analyze")
+                    else:
+                        with st.spinner("Analyzing code security..."):
+                            result = st.session_state.assistant.analyze_code_security(code_snippet, code_lang)
+                            st.markdown(result)
+            
+            elif assessment_type == "Network Traffic Analysis":
+                traffic_type = st.selectbox("Traffic Type", ["http", "dns", "tcp", "ssl", "smb"])
+                traffic_desc = st.text_area("Describe traffic pattern or paste sample data", height=100)
+                
+                if st.button("Analyze Traffic", key="traffic_analysis_btn"):
+                    if st.session_state.assistant is None:
+                        st.warning("Please initialize assistant first")
+                    else:
+                        with st.spinner("Analyzing network traffic patterns..."):
+                            result = st.session_state.assistant.analyze_network_traffic(
+                                traffic_desc if traffic_desc else None,
+                                traffic_type
+                            )
+                            st.markdown(result)
+        
+        # Training Materials section
+        with st.expander("Training Materials"):
+            training_type = st.selectbox(
+                "Material Type",
+                ["Security Concept Explanation", "CTF Challenge", "Incident Response Plan", "Security Policy"]
+            )
+            
+            if training_type == "Security Concept Explanation":
+                concept = st.text_input("Enter security concept", placeholder="Example: XSS, CSRF, JWT")
+                
+                if st.button("Generate Explanation", key="concept_explain_btn"):
+                    if st.session_state.assistant is None:
+                        st.warning("Please initialize assistant first")
+                    elif not concept:
+                        st.warning("Please enter a security concept")
+                    else:
+                        with st.spinner(f"Generating explanation for {concept}..."):
+                            result = st.session_state.assistant.explain_security_concept(concept)
+                            st.markdown(result)
+            
+            elif training_type == "CTF Challenge":
+                ctf_difficulty = st.select_slider(
+                    "Difficulty", 
+                    options=["easy", "medium", "hard"],
+                    value="medium"
+                )
+                ctf_category = st.selectbox(
+                    "Category",
+                    ["web", "crypto", "forensics", "pwn", "reverse", "misc"]
+                )
+                
+                if st.button("Generate Challenge", key="ctf_gen_btn"):
+                    if st.session_state.assistant is None:
+                        st.warning("Please initialize assistant first")
+                    else:
+                        with st.spinner(f"Generating {ctf_difficulty} {ctf_category} CTF challenge..."):
+                            result = st.session_state.assistant.generate_ctf_challenge(
+                                ctf_difficulty,
+                                ctf_category
+                            )
+                            st.markdown(result)
+            
+            elif training_type == "Incident Response Plan":
+                ir_incident = st.selectbox(
+                    "Incident Type",
+                    ["data breach", "ransomware", "DDoS", "insider threat", "phishing"]
+                )
+                ir_size = st.selectbox("Organization Size", ["small", "medium", "large"])
+                
+                if st.button("Generate IR Plan", key="ir_gen_btn"):
+                    if st.session_state.assistant is None:
+                        st.warning("Please initialize assistant first")
+                    else:
+                        with st.spinner(f"Generating incident response plan..."):
+                            result = st.session_state.assistant.generate_incident_response_plan(
+                                ir_incident,
+                                ir_size
+                            )
+                            st.markdown(result)
+            
+            elif training_type == "Security Policy":
+                policy_org = st.selectbox(
+                    "Organization Type",
+                    ["healthcare", "finance", "education", "retail", "government", "technology"]
+                )
+                policy_focus = st.selectbox(
+                    "Policy Focus",
+                    ["network", "data", "access control", "incident response", "BYOD", "cloud"]
+                )
+                
+                if st.button("Generate Policy", key="policy_gen_btn"):
+                    if st.session_state.assistant is None:
+                        st.warning("Please initialize assistant first")
+                    else:
+                        with st.spinner(f"Generating security policy..."):
+                            result = st.session_state.assistant.generate_security_policy(
+                                policy_org,
+                                policy_focus
+                            )
+                            st.markdown(result)
     
     # Main content - Tabs system
     tabs = ["Chat", "CVE Database", "Security News", "Tool Commands", "Google Dorking"]
