@@ -2,4 +2,6 @@ langchain_groq
 langchain
 streamlit
 requests
-
+streamlit-on-Hover-tabs
+streamlit-lottie
+python-docx
