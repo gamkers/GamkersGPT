@@ -5,3 +5,4 @@ requests
 streamlit-on-Hover-tabs
 streamlit-lottie
 python-docx
+cryptography
