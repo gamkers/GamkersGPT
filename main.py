@@ -11,7 +11,7 @@ from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
 import requests
 import xml.etree.ElementTree as ET
-
+from st_on_hover_tabs import on_hover_tabs
 class CyberSecurityAssistant:
     def __init__(self, groq_api_key):
         self.llm = ChatGroq(
@@ -825,7 +825,7 @@ def main():
         /* Main header styling */
         .main-header {
             padding: 1.5rem;
-            background-color: #1e293b;
+            background-color: black;
             border-radius: 12px;
             margin-bottom: 1.5rem;
             border: 1px solid rgba(148, 163, 184, 0.1);
@@ -1119,92 +1119,678 @@ def main():
         </div>
     """, unsafe_allow_html=True)
 
+    try:
+        # Get API key from secrets.toml or environment variable
+        groq_api_key = "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"
+                
+        # Initialize the assistant
+        st.session_state.assistant = CyberSecurityAssistant(groq_api_key=groq_api_key)
+        st.success("CyberGeni initialized successfully!")
+                
+    except Exception as e:
+        st.error(f"Error initializing assistant: {e}")
     # Sidebar
+    # with st.sidebar:
+    #     st.markdown("""
+    #         <h3 style="display: flex; align-items: center;">
+    #             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.5rem;">
+    #                 <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+    #                 <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+    #             </svg>
+    #             Cybersecurity Training
+    #         </h3>
+    #     """, unsafe_allow_html=True)
+        
+    #     # Initialize button with animation
+    #     if st.button("Initialize Assistant", key="init_assistant"):
+    #         try:
+    #             # Get API key from secrets.toml or environment variable
+    #             groq_api_key = "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"
+                
+    #             # Initialize the assistant
+    #             st.session_state.assistant = CyberSecurityAssistant(groq_api_key=groq_api_key)
+    #             st.success("CyberGeni initialized successfully!")
+                
+    #         except Exception as e:
+    #             st.error(f"Error initializing assistant: {e}")
+        
+    #     # Search tips and categories
+    #     st.markdown("""
+    #         <h3 style="display: flex; align-items: center; margin-top: 2rem;">
+    #             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.5rem;">
+    #                 <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+    #             </svg>
+    #             Features & Categories
+    #         </h3>
+            
+    #         <div style="margin-top: 1rem;">
+    #             <div class="category-pill">Network Security</div>
+    #             <div class="category-pill">Web App Security</div>
+    #             <div class="category-pill">Encryption</div>
+    #             <div class="category-pill">Malware Analysis</div>
+    #             <div class="category-pill">Penetration Testing</div>
+    #             <div class="category-pill">Social Engineering</div>
+    #             <div class="category-pill">Cloud Security</div>
+    #             <div class="category-pill">IoT Security</div>
+    #         </div>
+            
+    #         <h3 style="display: flex; align-items: center; margin-top: 2rem;">
+    #             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.5rem;">
+    #                 <circle cx="11" cy="11" r="8"></circle>
+    #                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+    #             </svg>
+    #             New Features
+    #         </h3>
+            
+    #         <div style="background-color: #1a1e24; padding: 1.25rem; border-radius: 12px; margin-top: 0.75rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+    #             <p style="font-weight: 600; margin-bottom: 0.75rem; color: #e2e8f0;">Try these new features:</p>
+    #             <ul style="margin-left: 0.75rem; padding-left: 1rem; color: #a0aec0;">
+    #                 <li style="margin-bottom: 0.5rem;">CVE Database Search</li>
+    #                 <li style="margin-bottom: 0.5rem;">Latest Hacker News</li>
+    #                 <li style="margin-bottom: 0.5rem;">Security Tool Commands</li>
+    #                 <li style="margin-bottom: 0.5rem;">Google Dorking Generator</li>
+    #             </ul>
+    #         </div>
+    #     """, unsafe_allow_html=True)
+        
+    #     # Clear conversation button
+    #     if st.button("Clear Conversation", key="clear_conv"):
+    #         st.session_state.messages = []
+    #         if st.session_state.assistant:
+    #             st.session_state.assistant.conversation_history = []
+    #         st.rerun()
+            
+    #     # Disclaimer
+    #     st.markdown("""
+    #         <div style="background-color: #7f1d1d; padding: 1rem; border-radius: 8px; margin-top: 2rem;">
+    #             <h4 style="color: #fee2e2; margin-top: 0;">⚠️ Educational Use Only</h4>
+    #             <p style="color: #fecaca; font-size: 0.85rem; margin-bottom: 0;">
+    #                 All information provided by CyberGeni is for educational purposes only. Always practice ethical hacking and only test systems you own or have explicit permission to test.
+    #             </p>
+    #         </div>
+    #     """, unsafe_allow_html=True)
+
+
+    #     st.markdown("### Tools")
+        
+    #     # Crypto Tools section in sidebar
+    #     with st.expander("Crypto Tools"):
+    #         crypto_op = st.radio("Operation", ["Encode/Decode", "Hash Analysis", "Encrypt/Decrypt"])
+            
+    #         if crypto_op == "Encode/Decode":
+    #             # Encoding/Decoding tool
+    #             encode_decode_op = st.radio("Action", ["Encode", "Decode"], horizontal=True)
+    #             format_type = st.selectbox("Format", ["base64", "hex", "url", "binary"])
+    #             input_data = st.text_area("Input Data", height=100)
+                
+    #             if st.button("Process", key="encode_decode_btn"):
+    #                 if st.session_state.assistant is None:
+    #                     st.warning("Please initialize assistant first")
+    #                 elif not input_data:
+    #                     st.warning("Please enter data to process")
+    #                 else:
+    #                     result = st.session_state.assistant.decode_or_encode_data(
+    #                         input_data, 
+    #                         encode_decode_op.lower(), 
+    #                         format_type
+    #                     )
+                        
+    #                     if isinstance(result, dict):
+    #                         st.code(result["result"], language="text")
+    #                         st.success(result["explanation"])
+    #                     else:
+    #                         st.error(result)
+            
+    #         elif crypto_op == "Hash Analysis":
+    #             # Hash Analysis Tool
+    #             hash_input = st.text_area("Enter Hash to Analyze", height=80)
+                
+    #             if st.button("Analyze Hash", key="analyze_hash_btn"):
+    #                 if st.session_state.assistant is None:
+    #                     st.warning("Please initialize assistant first")
+    #                 elif not hash_input:
+    #                     st.warning("Please enter a hash to analyze")
+    #                 else:
+    #                     result = st.session_state.assistant.hash_analyzer(hash_input)
+                        
+    #                     if isinstance(result, dict):
+    #                         st.markdown(f"""
+    #                         **Hash Type:** {result["hash_type"]}\n
+    #                         **Length:** {result["length"]}\n
+    #                         **Security Strength:** {result["strength"]}\n
+    #                         **Valid Format:** {result["valid_format"]}\n
+    #                         **Additional Info:** {result["additional_info"]}
+    #                         """)
+    #                     else:
+    #                         st.error(result)
+            
+    #         elif crypto_op == "Encrypt/Decrypt":
+    #             # Encryption/Decryption Tool
+    #             crypto_action = st.radio("Action", ["Encrypt", "Decrypt"], horizontal=True)
+    #             algorithm = st.selectbox("Algorithm", ["aes", "des", "chacha20"])
+    #             crypto_input = st.text_area("Input Data", height=80)
+                
+    #             key_col, iv_col = st.columns(2)
+    #             with key_col:
+    #                 key_input = st.text_input("Key (Base64, leave empty to generate)")
+    #             with iv_col:
+    #                 iv_input = st.text_input("IV/Nonce (Base64, leave empty to generate)")
+                
+    #             if st.button("Process", key="crypto_process_btn"):
+    #                 if st.session_state.assistant is None:
+    #                     st.warning("Please initialize assistant first")
+    #                 elif not crypto_input:
+    #                     st.warning("Please enter data to process")
+    #                 else:
+    #                     result = st.session_state.assistant.decrypt_or_encrypt_data(
+    #                         crypto_input,
+    #                         crypto_action.lower(),
+    #                         algorithm,
+    #                         key_input if key_input else None,
+    #                         iv_input if iv_input else None
+    #                     )
+                        
+    #                     if isinstance(result, dict):
+    #                         st.code(result["result"], language="text")
+                            
+    #                         if crypto_action.lower() == "encrypt":
+    #                             st.info("Save these values for decryption:")
+    #                             st.code(f"Key: {result['key']}\nIV: {result['iv']}", language="text")
+    #                     else:
+    #                         st.error(result)
+        
+    #     # Security Assessment Tools
+    #     with st.expander("Security Assessment"):
+    #         assessment_type = st.selectbox(
+    #             "Assessment Type",
+    #             ["Vulnerability Assessment", "Code Security Analysis", "Network Traffic Analysis"]
+    #         )
+            
+    #         if assessment_type == "Vulnerability Assessment":
+    #             system_desc = st.text_area("Describe the system to assess", height=100)
+                
+    #             if st.button("Generate Assessment", key="vuln_assess_btn"):
+    #                 if st.session_state.assistant is None:
+    #                     st.warning("Please initialize assistant first")
+    #                 elif not system_desc:
+    #                     st.warning("Please describe the system to assess")
+    #                 else:
+    #                     with st.spinner("Generating vulnerability assessment..."):
+    #                         result = st.session_state.assistant.vulnerability_assessment(system_desc)
+    #                         st.markdown(result)
+            
+    #         elif assessment_type == "Code Security Analysis":
+    #             code_lang = st.selectbox("Language", ["python", "javascript", "php", "java", "html", "css"])
+    #             code_snippet = st.text_area("Paste code to analyze", height=150)
+                
+    #             if st.button("Analyze Code", key="code_analysis_btn"):
+    #                 if st.session_state.assistant is None:
+    #                     st.warning("Please initialize assistant first")
+    #                 elif not code_snippet:
+    #                     st.warning("Please enter code to analyze")
+    #                 else:
+    #                     with st.spinner("Analyzing code security..."):
+    #                         result = st.session_state.assistant.analyze_code_security(code_snippet, code_lang)
+    #                         st.markdown(result)
+            
+    #         elif assessment_type == "Network Traffic Analysis":
+    #             traffic_type = st.selectbox("Traffic Type", ["http", "dns", "tcp", "ssl", "smb"])
+    #             traffic_desc = st.text_area("Describe traffic pattern or paste sample data", height=100)
+                
+    #             if st.button("Analyze Traffic", key="traffic_analysis_btn"):
+    #                 if st.session_state.assistant is None:
+    #                     st.warning("Please initialize assistant first")
+    #                 else:
+    #                     with st.spinner("Analyzing network traffic patterns..."):
+    #                         result = st.session_state.assistant.analyze_network_traffic(
+    #                             traffic_desc if traffic_desc else None,
+    #                             traffic_type
+    #                         )
+    #                         st.markdown(result)
+        
+    #     # Training Materials section
+    #     with st.expander("Training Materials"):
+    #         training_type = st.selectbox(
+    #             "Material Type",
+    #             ["Security Concept Explanation", "CTF Challenge", "Incident Response Plan", "Security Policy"]
+    #         )
+            
+    #         if training_type == "Security Concept Explanation":
+    #             concept = st.text_input("Enter security concept", placeholder="Example: XSS, CSRF, JWT")
+                
+    #             if st.button("Generate Explanation", key="concept_explain_btn"):
+    #                 if st.session_state.assistant is None:
+    #                     st.warning("Please initialize assistant first")
+    #                 elif not concept:
+    #                     st.warning("Please enter a security concept")
+    #                 else:
+    #                     with st.spinner(f"Generating explanation for {concept}..."):
+    #                         result = st.session_state.assistant.explain_security_concept(concept)
+    #                         st.markdown(result)
+            
+    #         elif training_type == "CTF Challenge":
+    #             ctf_difficulty = st.select_slider(
+    #                 "Difficulty", 
+    #                 options=["easy", "medium", "hard"],
+    #                 value="medium"
+    #             )
+    #             ctf_category = st.selectbox(
+    #                 "Category",
+    #                 ["web", "crypto", "forensics", "pwn", "reverse", "misc"]
+    #             )
+                
+    #             if st.button("Generate Challenge", key="ctf_gen_btn"):
+    #                 if st.session_state.assistant is None:
+    #                     st.warning("Please initialize assistant first")
+    #                 else:
+    #                     with st.spinner(f"Generating {ctf_difficulty} {ctf_category} CTF challenge..."):
+    #                         result = st.session_state.assistant.generate_ctf_challenge(
+    #                             ctf_difficulty,
+    #                             ctf_category
+    #                         )
+    #                         st.markdown(result)
+            
+    #         elif training_type == "Incident Response Plan":
+    #             ir_incident = st.selectbox(
+    #                 "Incident Type",
+    #                 ["data breach", "ransomware", "DDoS", "insider threat", "phishing"]
+    #             )
+    #             ir_size = st.selectbox("Organization Size", ["small", "medium", "large"])
+                
+    #             if st.button("Generate IR Plan", key="ir_gen_btn"):
+    #                 if st.session_state.assistant is None:
+    #                     st.warning("Please initialize assistant first")
+    #                 else:
+    #                     with st.spinner(f"Generating incident response plan..."):
+    #                         result = st.session_state.assistant.generate_incident_response_plan(
+    #                             ir_incident,
+    #                             ir_size
+    #                         )
+    #                         st.markdown(result)
+            
+    #         elif training_type == "Security Policy":
+    #             policy_org = st.selectbox(
+    #                 "Organization Type",
+    #                 ["healthcare", "finance", "education", "retail", "government", "technology"]
+    #             )
+    #             policy_focus = st.selectbox(
+    #                 "Policy Focus",
+    #                 ["network", "data", "access control", "incident response", "BYOD", "cloud"]
+    #             )
+                
+    #             if st.button("Generate Policy", key="policy_gen_btn"):
+    #                 if st.session_state.assistant is None:
+    #                     st.warning("Please initialize assistant first")
+    #                 else:
+    #                     with st.spinner(f"Generating security policy..."):
+    #                         result = st.session_state.assistant.generate_security_policy(
+    #                             policy_org,
+    #                             policy_focus
+    #                         )
+    #                         st.markdown(result)
+
+
+    
+
+
+    def chat():    
+        # Main content - Tabs system
+        tabs = ["Chat", "CVE Database", "Security News", "Tool Commands", "Google Dorking"]
+        st.session_state.current_tab = st.radio("Select Feature", tabs, horizontal=True)
+        
+        # Chat Tab
+        if st.session_state.current_tab == "Chat":
+            # Feature cards
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                st.markdown("""
+                    <div class="sleek-card">
+                        <h3 style="margin: 0 0 0.75rem 0; color: #e2e8f0; display: flex; align-items: center;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.75rem;">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                            Ethical Hacking Training
+                        </h3>
+                        <p style="color: #a0aec0; margin-bottom: 0;">Learn ethical hacking principles, tools, and methodologies through guided training. Get personalized instructions and hands-on practice for penetration testing and vulnerability assessment.</p>
+                    </div>
+                """, unsafe_allow_html=True)
+            
+            with col2:
+                st.markdown("""
+                    <div class="sleek-card">
+                        <h3 style="margin: 0 0 0.75rem 0; color: #e2e8f0; display: flex; align-items: center;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.75rem;">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                            </svg>
+                            Security Best Practices
+                        </h3>
+                        <p style="color: #a0aec0; margin-bottom: 0;">Learn defensive security measures, incident response protocols, and security best practices to protect systems and networks from cyber threats.</p>
+                    </div>
+                """, unsafe_allow_html=True)
+                
+            # Chat container
+            # st.markdown('<div class="chat-container">', unsafe_allow_html=True)
+            
+            # Function to display messages
+            def display_messages():
+                for message in st.session_state.messages:
+                    if message["role"] == "user":
+                        st.markdown(
+                            f"""
+                            <div class="message-container user-container">
+                                <div class="avatar user-avatar">U</div>
+                                <div class="message-box user-message">{message['content']}</div>
+                            </div>
+                            """,
+                            unsafe_allow_html=True,
+                        )
+                    elif message["role"] == "assistant":
+                        st.markdown(
+                            f"""
+                            <div class="message-container assistant-container">
+                                <div class="avatar assistant-avatar">C</div>
+                                <div class="message-box assistant-message">{message['content']}</div>
+                            </div>
+                            """,
+                            unsafe_allow_html=True,
+                        )
+                
+                # Display thinking animation if assistant is processing
+                if st.session_state.thinking:
+                    st.markdown(
+                        """
+                        <div class="message-container assistant-container">
+                            <div class="avatar assistant-avatar">C</div>
+                            <div class="typing-indicator">
+                                <div class="typing-dot"></div>
+                                <div class="typing-dot"></div>
+                                <div class="typing-dot"></div>
+                            </div>
+                        </div>
+                        """,
+                        unsafe_allow_html=True,
+                    )
+        
+            # Display previous messages
+            display_messages()
+            
+            # Initial hint if no messages
+            if not st.session_state.messages:
+                st.markdown("""
+                    <div style="text-align: center; padding: 32px 16px; color: #6b7280;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin: 0 auto 16px;">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                        </svg>
+                        <p>No messages yet. Initialize the assistant and start the conversation!</p>
+                    </div>
+                """, unsafe_allow_html=True)
+            
+            st.markdown('</div>', unsafe_allow_html=True)
+            
+            # User input and processing
+            if prompt := st.chat_input("Ask CyberGeni...", key="user_input"):
+                if st.session_state.assistant is None:
+                    st.warning("Please initialize the assistant first using the button in the sidebar.")
+                else:
+                    # Add user message to chat
+                    st.session_state.messages.append({"role": "user", "content": prompt})
+                    
+                    # Set thinking state to true and rerun to show the animation
+                    st.session_state.thinking = True
+                    st.rerun()
+            
+            # This part only runs after the rerun if thinking is True
+            if st.session_state.thinking and st.session_state.assistant is not None:
+                try:
+                    # Get assistant response
+                    response = st.session_state.assistant.query(st.session_state.messages[-1]["content"])
+                    
+                    # Add assistant response
+                    st.session_state.messages.append({"role": "assistant", "content": response})
+                    
+                    # Stop thinking, rerun to show updated chat
+                    st.session_state.thinking = False
+                    st.rerun()
+                    
+                except Exception as e:
+                    st.error(f"Error processing your request: {str(e)}")
+                    st.session_state.thinking = False
+                    st.rerun()
+        
+        # CVE Database Tab
+        elif st.session_state.current_tab == "CVE Database":
+            st.markdown("""
+                <div class="sleek-card">
+                    <h3 style="margin: 0 0 0.75rem 0; color: #e2e8f0; display: flex; align-items: center;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.75rem;">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        CVE Database Search
+                    </h3>
+                    <p style="color: #a0aec0; margin-bottom: 1rem;">Search for Common Vulnerabilities and Exposures (CVE) by ID or keyword. Get detailed information about security vulnerabilities, including severity, impact, and remediation.</p>
+                </div>
+            """, unsafe_allow_html=True)
+            
+            # CVE search form
+            search_col1, search_col2 = st.columns([3, 1])
+            
+            with search_col1:
+                cve_query = st.text_input("Enter CVE ID or keyword", 
+                                        placeholder="Example: CVE-2021-44228 or log4j")
+                
+            with search_col2:
+                cve_limit = st.selectbox("Result limit", [5, 10, 15, 20], index=0)
+                search_button = st.button("Search CVE", key="search_cve_button")
+            
+            # Search process
+            if search_button and cve_query:
+                if st.session_state.assistant is None:
+                    st.warning("Please initialize the assistant first using the button in the sidebar.")
+                else:
+                    with st.spinner("Searching CVE database..."):
+                        cve_results = st.session_state.assistant.search_cve(cve_query, cve_limit)
+                        
+                        if isinstance(cve_results, str):
+                            st.warning(cve_results)
+                        else:
+                            # Display results in a nice format
+                            for result in cve_results:
+                                with st.expander(f"{result['cve_id']} - Severity: {result['severity']} ({result['base_score']})"):
+                                    st.markdown(f"### {result['cve_id']}")
+                                    
+                                    # Create two columns for severity and dates
+                                    col1, col2 = st.columns(2)
+                                    with col1:
+                                        st.markdown(f"**Severity**: {result['severity']}")
+                                        st.markdown(f"**CVSS Score**: {result['base_score']}")
+                                    
+                                    with col2:
+                                        st.markdown(f"**Published**: {result['published']}")
+                                        st.markdown(f"**Last Modified**: {result['last_modified']}")
+                                    
+                                    st.markdown("### Description")
+                                    st.markdown(result['description'])
+                                    
+                                    # References
+                                    if result['references']:
+                                        st.markdown("### References")
+                                        for ref in result['references'][:5]:  # Limit to first 5 references
+                                            st.markdown(f"- [{ref.get('url', 'Link')}]({ref.get('url', '#')})")
+        
+        # Security News Tab
+        elif st.session_state.current_tab == "Security News":
+            st.markdown("""
+                <div class="sleek-card">
+                    <h3 style="margin: 0 0 0.75rem 0; color: #e2e8f0; display: flex; align-items: center;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.75rem;">
+                            <path d="M19 20H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h10l6 6v8a2 2 0 0 1-2 2z"></path>
+                            <line x1="12" y1="18" x2="12" y2="12"></line>
+                            <line x1="9" y1="15" x2="15" y2="15"></line>
+                        </svg>
+                        Latest Cybersecurity News
+                    </h3>
+                    <p style="color: #a0aec0; margin-bottom: 1rem;">Stay updated with the latest cybersecurity news from The Hacker News, summarized by AI for quick insights into current threats, vulnerabilities, and industry developments.</p>
+                </div>
+            """, unsafe_allow_html=True)
+            
+            # News fetch options
+            news_col1, news_col2 = st.columns([3, 1])
+            
+            with news_col2:
+                news_limit = st.selectbox("Article limit", [3, 5, 7, 10], index=1)
+                news_button = st.button("Fetch News", key="fetch_news_button")
+            
+            # News fetch process
+            if news_button:
+                if st.session_state.assistant is None:
+                    st.warning("Please initialize the assistant first using the button in the sidebar.")
+                else:
+                    with st.spinner("Fetching and summarizing latest cybersecurity news..."):
+                        news_results = st.session_state.assistant.get_hacker_news(news_limit)
+                        
+                        if isinstance(news_results, str):
+                            st.warning(news_results)
+                        else:
+                            # Display news in a nice format
+                            for i, news in enumerate(news_results):
+                                with st.container():
+                                    st.markdown(f"""
+                                    <div class="sleek-card" style="margin-bottom: 1rem;">
+                                        <h4 style="margin: 0 0 0.5rem 0; color: #e2e8f0;">{news['title']}</h4>
+                                        <p style="color: #a0aec0; font-size: 0.8rem; margin-bottom: 0.75rem;">Published: {news['published']}</p>
+                                        <p style="color: #e2e8f0; margin-bottom: 1rem;">{news['summary']}</p>
+                                        <a href="{news['link']}" target="_blank" style="color: #10b981; text-decoration: none; font-weight: 500;">Read full article →</a>
+                                    </div>
+                                    """, unsafe_allow_html=True)
+        
+        # Tool Commands Tab
+        elif st.session_state.current_tab == "Tool Commands":
+            st.markdown("""
+                <div class="sleek-card">
+                    <h3 style="margin: 0 0 0.75rem 0; color: #e2e8f0; display: flex; align-items: center;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.75rem;">
+                            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+                        </svg>
+                        Security Tool Commands
+                    </h3>
+                    <p style="color: #a0aec0; margin-bottom: 1rem;">Generate practical command examples for common security tools. Learn how to use tools like Nmap, Metasploit, Wireshark, and more for your security assessments.</p>
+                </div>
+            """, unsafe_allow_html=True)
+            
+            # Tool commands form
+            tool_col1, tool_col2 = st.columns(2)
+            
+            with tool_col1:
+                tool_name = st.text_input("Enter security tool name", placeholder="Example: nmap, metasploit, burpsuite")
+                
+            with tool_col2:
+                task_desc = st.text_input("What do you want to achieve with this tool?", 
+                                        placeholder="Example: network scanning, discovery of web vulnerabilities")
+            
+            tool_button = st.button("Generate Commands", key="gen_tool_button")
+            
+            # Tool command generation process
+            if tool_button and tool_name and task_desc:
+                if st.session_state.assistant is None:
+                    st.warning("Please initialize the assistant first using the button in the sidebar.")
+                else:
+                    with st.spinner(f"Generating {tool_name} commands for {task_desc}..."):
+                        tool_results = st.session_state.assistant.generate_tool_commands(tool_name, task_desc)
+                        # st.write(tool_results)
+                        st.markdown(f"""
+                            <div class="sleek-card" style="background-color: #0f172a; border: 1px solid #1e293b;">
+                                <h4 style="margin: 0 0 1rem 0; color: #e2e8f0; display: flex; align-items: center;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.75rem;">
+                                        <polyline points="9 11 12 14 22 4"></polyline>
+                                        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                                    </svg>
+                                    Generated Commands: {tool_name}
+                                </h4>
+                                <div style="color: #e2e8f0; font-family: monospace; background-color: #1e293b; padding: 1rem; border-radius: 8px; white-space: pre-wrap;">
+                                    {tool_results}
+                                </div>
+                            </div>
+                        """, unsafe_allow_html=True)
+        
+        # Google Dorking Tab
+        elif st.session_state.current_tab == "Google Dorking":
+            st.markdown("""
+                <div class="sleek-card">
+                    <h3 style="margin: 0 0 0.75rem 0; color: #e2e8f0; display: flex; align-items: center;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.75rem;">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        Google Dorking Generator
+                    </h3>
+                    <p style="color: #a0aec0; margin-bottom: 1rem;">Generate Google dorking queries for finding specific information on websites. Learn advanced search operators to identify potential security vulnerabilities and improve targeted reconnaissance.</p>
+                </div>
+            """, unsafe_allow_html=True)
+            
+            # Google dork form
+            dork_col1, dork_col2 = st.columns(2)
+            
+            with dork_col1:
+                target_type = st.text_input("What are you looking for?", 
+                                        placeholder="Example: exposed databases, login pages, config files")
+                
+            with dork_col2:
+                dork_objective = st.text_input("What's your security objective?", 
+                                            placeholder="Example: vulnerability assessment, information gathering")
+            
+            dork_button = st.button("Generate Google Dorks", key="gen_dork_button")
+            
+            # Dork generation process
+            if dork_button and target_type and dork_objective:
+                if st.session_state.assistant is None:
+                    st.warning("Please initialize the assistant first using the button in the sidebar.")
+                else:
+                    with st.spinner(f"Generating Google dorks for finding {target_type}..."):
+                        dork_results = st.session_state.assistant.generate_google_dorks(target_type, dork_objective)
+                        
+                        st.write(dork_results)
+
+    try:
+        with open("style.css") as f:
+            st.markdown('<style>' + f.read() + '</style>', unsafe_allow_html=True)
+    except Exception:
+        pass
     with st.sidebar:
-        st.markdown("""
-            <h3 style="display: flex; align-items: center;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.5rem;">
-                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                </svg>
-                Cybersecurity Training
-            </h3>
-        """, unsafe_allow_html=True)
-        
-        # Initialize button with animation
-        if st.button("Initialize Assistant", key="init_assistant"):
-            try:
-                # Get API key from secrets.toml or environment variable
-                groq_api_key = "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"
-                
-                # Initialize the assistant
-                st.session_state.assistant = CyberSecurityAssistant(groq_api_key=groq_api_key)
-                st.success("CyberGeni initialized successfully!")
-                
-            except Exception as e:
-                st.error(f"Error initializing assistant: {e}")
-        
-        # Search tips and categories
-        st.markdown("""
-            <h3 style="display: flex; align-items: center; margin-top: 2rem;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.5rem;">
-                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
-                </svg>
-                Features & Categories
-            </h3>
-            
-            <div style="margin-top: 1rem;">
-                <div class="category-pill">Network Security</div>
-                <div class="category-pill">Web App Security</div>
-                <div class="category-pill">Encryption</div>
-                <div class="category-pill">Malware Analysis</div>
-                <div class="category-pill">Penetration Testing</div>
-                <div class="category-pill">Social Engineering</div>
-                <div class="category-pill">Cloud Security</div>
-                <div class="category-pill">IoT Security</div>
-            </div>
-            
-            <h3 style="display: flex; align-items: center; margin-top: 2rem;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.5rem;">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                </svg>
-                New Features
-            </h3>
-            
-            <div style="background-color: #1a1e24; padding: 1.25rem; border-radius: 12px; margin-top: 0.75rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
-                <p style="font-weight: 600; margin-bottom: 0.75rem; color: #e2e8f0;">Try these new features:</p>
-                <ul style="margin-left: 0.75rem; padding-left: 1rem; color: #a0aec0;">
-                    <li style="margin-bottom: 0.5rem;">CVE Database Search</li>
-                    <li style="margin-bottom: 0.5rem;">Latest Hacker News</li>
-                    <li style="margin-bottom: 0.5rem;">Security Tool Commands</li>
-                    <li style="margin-bottom: 0.5rem;">Google Dorking Generator</li>
-                </ul>
-            </div>
-        """, unsafe_allow_html=True)
-        
-        # Clear conversation button
-        if st.button("Clear Conversation", key="clear_conv"):
-            st.session_state.messages = []
-            if st.session_state.assistant:
-                st.session_state.assistant.conversation_history = []
-            st.rerun()
-            
-        # Disclaimer
-        st.markdown("""
-            <div style="background-color: #7f1d1d; padding: 1rem; border-radius: 8px; margin-top: 2rem;">
-                <h4 style="color: #fee2e2; margin-top: 0;">⚠️ Educational Use Only</h4>
-                <p style="color: #fecaca; font-size: 0.85rem; margin-bottom: 0;">
-                    All information provided by CyberGeni is for educational purposes only. Always practice ethical hacking and only test systems you own or have explicit permission to test.
-                </p>
-            </div>
-        """, unsafe_allow_html=True)
+        tabs = on_hover_tabs(
+            tabName=['Encryption', 'chat', 'Security Assessment','Training'],
+            iconName=['code', 'chat', 'info','home'],
+            styles={
+                        'navtab': {
+                            'background-color': 'black',
+                            'color': 'greeh',
+                            'font-size': '16px',
+                            'transition': '.3s',
+                            'white-space': 'nowrap',
+                            'text-transform': 'uppercase'
+                        },
+                        'tabOptionsStyle': {
+                            ':hover': {'color': '#1A1A1A', 'background-color': 'black'}
+                        },
+                        'iconStyle': {
+                            'position': 'fixed',
+                            'left': '7.5px',
+                            'text-align': 'left'
+                        },
+                        'tabStyle': {
+                            'list-style-type': 'none',
+                            'margin-bottom': '30px',
+                            'padding-left': '30px'
+                        }
+                    }
+        )
 
-
-        st.markdown("### Tools")
-        
-        # Crypto Tools section in sidebar
-        with st.expander("Crypto Tools"):
+    if tabs == 'chat':
+        chat()
+    elif tabs == 'Encryption':
+        if True:
             crypto_op = st.radio("Operation", ["Encode/Decode", "Hash Analysis", "Encrypt/Decrypt"])
             
             if crypto_op == "Encode/Decode":
@@ -1288,9 +1874,9 @@ def main():
                                 st.code(f"Key: {result['key']}\nIV: {result['iv']}", language="text")
                         else:
                             st.error(result)
-        
-        # Security Assessment Tools
-        with st.expander("Security Assessment"):
+
+    elif tabs == 'Security Assessment':
+        if True:
             assessment_type = st.selectbox(
                 "Assessment Type",
                 ["Vulnerability Assessment", "Code Security Analysis", "Network Traffic Analysis"]
@@ -1337,9 +1923,8 @@ def main():
                                 traffic_type
                             )
                             st.markdown(result)
-        
-        # Training Materials section
-        with st.expander("Training Materials"):
+    elif tabs=='Training':
+        if True:
             training_type = st.selectbox(
                 "Material Type",
                 ["Security Concept Explanation", "CTF Challenge", "Incident Response Plan", "Security Policy"]
@@ -1418,345 +2003,6 @@ def main():
                                 policy_focus
                             )
                             st.markdown(result)
-    
-    # Main content - Tabs system
-    tabs = ["Chat", "CVE Database", "Security News", "Tool Commands", "Google Dorking"]
-    st.session_state.current_tab = st.radio("Select Feature", tabs, horizontal=True)
-    
-    # Chat Tab
-    if st.session_state.current_tab == "Chat":
-        # Feature cards
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            st.markdown("""
-                <div class="sleek-card">
-                    <h3 style="margin: 0 0 0.75rem 0; color: #e2e8f0; display: flex; align-items: center;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.75rem;">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                            <circle cx="12" cy="7" r="4"></circle>
-                        </svg>
-                        Ethical Hacking Training
-                    </h3>
-                    <p style="color: #a0aec0; margin-bottom: 0;">Learn ethical hacking principles, tools, and methodologies through guided training. Get personalized instructions and hands-on practice for penetration testing and vulnerability assessment.</p>
-                </div>
-            """, unsafe_allow_html=True)
-        
-        with col2:
-            st.markdown("""
-                <div class="sleek-card">
-                    <h3 style="margin: 0 0 0.75rem 0; color: #e2e8f0; display: flex; align-items: center;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.75rem;">
-                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                        </svg>
-                        Security Best Practices
-                    </h3>
-                    <p style="color: #a0aec0; margin-bottom: 0;">Learn defensive security measures, incident response protocols, and security best practices to protect systems and networks from cyber threats.</p>
-                </div>
-            """, unsafe_allow_html=True)
-            
-        # Chat container
-        # st.markdown('<div class="chat-container">', unsafe_allow_html=True)
-        
-        # Function to display messages
-        def display_messages():
-            for message in st.session_state.messages:
-                if message["role"] == "user":
-                    st.markdown(
-                        f"""
-                        <div class="message-container user-container">
-                            <div class="avatar user-avatar">U</div>
-                            <div class="message-box user-message">{message['content']}</div>
-                        </div>
-                        """,
-                        unsafe_allow_html=True,
-                    )
-                elif message["role"] == "assistant":
-                    st.markdown(
-                        f"""
-                        <div class="message-container assistant-container">
-                            <div class="avatar assistant-avatar">C</div>
-                            <div class="message-box assistant-message">{message['content']}</div>
-                        </div>
-                        """,
-                        unsafe_allow_html=True,
-                    )
-            
-            # Display thinking animation if assistant is processing
-            if st.session_state.thinking:
-                st.markdown(
-                    """
-                    <div class="message-container assistant-container">
-                        <div class="avatar assistant-avatar">C</div>
-                        <div class="typing-indicator">
-                            <div class="typing-dot"></div>
-                            <div class="typing-dot"></div>
-                            <div class="typing-dot"></div>
-                        </div>
-                    </div>
-                    """,
-                    unsafe_allow_html=True,
-                )
-    
-        # Display previous messages
-        display_messages()
-        
-        # Initial hint if no messages
-        if not st.session_state.messages:
-            st.markdown("""
-                <div style="text-align: center; padding: 32px 16px; color: #6b7280;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin: 0 auto 16px;">
-                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                    </svg>
-                    <p>No messages yet. Initialize the assistant and start the conversation!</p>
-                </div>
-            """, unsafe_allow_html=True)
-        
-        st.markdown('</div>', unsafe_allow_html=True)
-        
-        # User input and processing
-        if prompt := st.chat_input("Ask CyberGeni...", key="user_input"):
-            if st.session_state.assistant is None:
-                st.warning("Please initialize the assistant first using the button in the sidebar.")
-            else:
-                # Add user message to chat
-                st.session_state.messages.append({"role": "user", "content": prompt})
-                
-                # Set thinking state to true and rerun to show the animation
-                st.session_state.thinking = True
-                st.rerun()
-        
-        # This part only runs after the rerun if thinking is True
-        if st.session_state.thinking and st.session_state.assistant is not None:
-            try:
-                # Get assistant response
-                response = st.session_state.assistant.query(st.session_state.messages[-1]["content"])
-                
-                # Add assistant response
-                st.session_state.messages.append({"role": "assistant", "content": response})
-                
-                # Stop thinking, rerun to show updated chat
-                st.session_state.thinking = False
-                st.rerun()
-                
-            except Exception as e:
-                st.error(f"Error processing your request: {str(e)}")
-                st.session_state.thinking = False
-                st.rerun()
-    
-    # CVE Database Tab
-    elif st.session_state.current_tab == "CVE Database":
-        st.markdown("""
-            <div class="sleek-card">
-                <h3 style="margin: 0 0 0.75rem 0; color: #e2e8f0; display: flex; align-items: center;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.75rem;">
-                        <circle cx="11" cy="11" r="8"></circle>
-                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                    </svg>
-                    CVE Database Search
-                </h3>
-                <p style="color: #a0aec0; margin-bottom: 1rem;">Search for Common Vulnerabilities and Exposures (CVE) by ID or keyword. Get detailed information about security vulnerabilities, including severity, impact, and remediation.</p>
-            </div>
-        """, unsafe_allow_html=True)
-        
-        # CVE search form
-        search_col1, search_col2 = st.columns([3, 1])
-        
-        with search_col1:
-            cve_query = st.text_input("Enter CVE ID or keyword", 
-                                      placeholder="Example: CVE-2021-44228 or log4j")
-            
-        with search_col2:
-            cve_limit = st.selectbox("Result limit", [5, 10, 15, 20], index=0)
-            search_button = st.button("Search CVE", key="search_cve_button")
-        
-        # Search process
-        if search_button and cve_query:
-            if st.session_state.assistant is None:
-                st.warning("Please initialize the assistant first using the button in the sidebar.")
-            else:
-                with st.spinner("Searching CVE database..."):
-                    cve_results = st.session_state.assistant.search_cve(cve_query, cve_limit)
-                    
-                    if isinstance(cve_results, str):
-                        st.warning(cve_results)
-                    else:
-                        # Display results in a nice format
-                        for result in cve_results:
-                            with st.expander(f"{result['cve_id']} - Severity: {result['severity']} ({result['base_score']})"):
-                                st.markdown(f"### {result['cve_id']}")
-                                
-                                # Create two columns for severity and dates
-                                col1, col2 = st.columns(2)
-                                with col1:
-                                    st.markdown(f"**Severity**: {result['severity']}")
-                                    st.markdown(f"**CVSS Score**: {result['base_score']}")
-                                
-                                with col2:
-                                    st.markdown(f"**Published**: {result['published']}")
-                                    st.markdown(f"**Last Modified**: {result['last_modified']}")
-                                
-                                st.markdown("### Description")
-                                st.markdown(result['description'])
-                                
-                                # References
-                                if result['references']:
-                                    st.markdown("### References")
-                                    for ref in result['references'][:5]:  # Limit to first 5 references
-                                        st.markdown(f"- [{ref.get('url', 'Link')}]({ref.get('url', '#')})")
-    
-    # Security News Tab
-    elif st.session_state.current_tab == "Security News":
-        st.markdown("""
-            <div class="sleek-card">
-                <h3 style="margin: 0 0 0.75rem 0; color: #e2e8f0; display: flex; align-items: center;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.75rem;">
-                        <path d="M19 20H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h10l6 6v8a2 2 0 0 1-2 2z"></path>
-                        <line x1="12" y1="18" x2="12" y2="12"></line>
-                        <line x1="9" y1="15" x2="15" y2="15"></line>
-                    </svg>
-                    Latest Cybersecurity News
-                </h3>
-                <p style="color: #a0aec0; margin-bottom: 1rem;">Stay updated with the latest cybersecurity news from The Hacker News, summarized by AI for quick insights into current threats, vulnerabilities, and industry developments.</p>
-            </div>
-        """, unsafe_allow_html=True)
-        
-        # News fetch options
-        news_col1, news_col2 = st.columns([3, 1])
-        
-        with news_col2:
-            news_limit = st.selectbox("Article limit", [3, 5, 7, 10], index=1)
-            news_button = st.button("Fetch News", key="fetch_news_button")
-        
-        # News fetch process
-        if news_button:
-            if st.session_state.assistant is None:
-                st.warning("Please initialize the assistant first using the button in the sidebar.")
-            else:
-                with st.spinner("Fetching and summarizing latest cybersecurity news..."):
-                    news_results = st.session_state.assistant.get_hacker_news(news_limit)
-                    
-                    if isinstance(news_results, str):
-                        st.warning(news_results)
-                    else:
-                        # Display news in a nice format
-                        for i, news in enumerate(news_results):
-                            with st.container():
-                                st.markdown(f"""
-                                <div class="sleek-card" style="margin-bottom: 1rem;">
-                                    <h4 style="margin: 0 0 0.5rem 0; color: #e2e8f0;">{news['title']}</h4>
-                                    <p style="color: #a0aec0; font-size: 0.8rem; margin-bottom: 0.75rem;">Published: {news['published']}</p>
-                                    <p style="color: #e2e8f0; margin-bottom: 1rem;">{news['summary']}</p>
-                                    <a href="{news['link']}" target="_blank" style="color: #10b981; text-decoration: none; font-weight: 500;">Read full article →</a>
-                                </div>
-                                """, unsafe_allow_html=True)
-    
-    # Tool Commands Tab
-    elif st.session_state.current_tab == "Tool Commands":
-        st.markdown("""
-            <div class="sleek-card">
-                <h3 style="margin: 0 0 0.75rem 0; color: #e2e8f0; display: flex; align-items: center;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.75rem;">
-                        <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
-                    </svg>
-                    Security Tool Commands
-                </h3>
-                <p style="color: #a0aec0; margin-bottom: 1rem;">Generate practical command examples for common security tools. Learn how to use tools like Nmap, Metasploit, Wireshark, and more for your security assessments.</p>
-            </div>
-        """, unsafe_allow_html=True)
-        
-        # Tool commands form
-        tool_col1, tool_col2 = st.columns(2)
-        
-        with tool_col1:
-            tool_name = st.text_input("Enter security tool name", placeholder="Example: nmap, metasploit, burpsuite")
-            
-        with tool_col2:
-            task_desc = st.text_input("What do you want to achieve with this tool?", 
-                                      placeholder="Example: network scanning, discovery of web vulnerabilities")
-        
-        tool_button = st.button("Generate Commands", key="gen_tool_button")
-        
-        # Tool command generation process
-        if tool_button and tool_name and task_desc:
-            if st.session_state.assistant is None:
-                st.warning("Please initialize the assistant first using the button in the sidebar.")
-            else:
-                with st.spinner(f"Generating {tool_name} commands for {task_desc}..."):
-                    tool_results = st.session_state.assistant.generate_tool_commands(tool_name, task_desc)
-                    # st.write(tool_results)
-                    st.markdown(f"""
-                        <div class="sleek-card" style="background-color: #0f172a; border: 1px solid #1e293b;">
-                            <h4 style="margin: 0 0 1rem 0; color: #e2e8f0; display: flex; align-items: center;">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.75rem;">
-                                    <polyline points="9 11 12 14 22 4"></polyline>
-                                    <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
-                                </svg>
-                                Generated Commands: {tool_name}
-                            </h4>
-                            <div style="color: #e2e8f0; font-family: monospace; background-color: #1e293b; padding: 1rem; border-radius: 8px; white-space: pre-wrap;">
-                                {tool_results}
-                            </div>
-                        </div>
-                    """, unsafe_allow_html=True)
-    
-    # Google Dorking Tab
-    elif st.session_state.current_tab == "Google Dorking":
-        st.markdown("""
-            <div class="sleek-card">
-                <h3 style="margin: 0 0 0.75rem 0; color: #e2e8f0; display: flex; align-items: center;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.75rem;">
-                        <circle cx="11" cy="11" r="8"></circle>
-                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                    </svg>
-                    Google Dorking Generator
-                </h3>
-                <p style="color: #a0aec0; margin-bottom: 1rem;">Generate Google dorking queries for finding specific information on websites. Learn advanced search operators to identify potential security vulnerabilities and improve targeted reconnaissance.</p>
-            </div>
-        """, unsafe_allow_html=True)
-        
-        # Google dork form
-        dork_col1, dork_col2 = st.columns(2)
-        
-        with dork_col1:
-            target_type = st.text_input("What are you looking for?", 
-                                       placeholder="Example: exposed databases, login pages, config files")
-            
-        with dork_col2:
-            dork_objective = st.text_input("What's your security objective?", 
-                                         placeholder="Example: vulnerability assessment, information gathering")
-        
-        dork_button = st.button("Generate Google Dorks", key="gen_dork_button")
-        
-        # Dork generation process
-        if dork_button and target_type and dork_objective:
-            if st.session_state.assistant is None:
-                st.warning("Please initialize the assistant first using the button in the sidebar.")
-            else:
-                with st.spinner(f"Generating Google dorks for finding {target_type}..."):
-                    dork_results = st.session_state.assistant.generate_google_dorks(target_type, dork_objective)
-                    
-                    st.write(dork_results)
-
-                    # st.markdown(f"""
-                    #     <div class="sleek-card" style="background-color: #0f172a; border: 1px solid #1e293b;">
-                    #         <h4 style="margin: 0 0 1rem 0; color: #e2e8f0; display: flex; align-items: center;">
-                    #             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.75rem;">
-                    #                 <polyline points="9 11 12 14 22 4"></polyline>
-                    #                 <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
-                    #             </svg>
-                    #             Generated Google Dorks
-                    #         </h4>
-                    #         <div style="color: #e2e8f0; font-family: monospace; background-color: #1e293b; padding: 1rem; border-radius: 8px; white-space: pre-wrap;">
-                    #             {dork_results}
-                    #         </div>
-                    #         <div style="background-color: #851c1c; padding: 0.75rem; border-radius: 8px; margin-top: 1rem;">
-                    #             <p style="color: #fee2e2; font-size: 0.8rem; margin: 0;">
-                    #                 <strong>⚠️ Ethical Reminder:</strong> Only use these dorks on websites you own or have explicit permission to test. Using these techniques without permission may violate laws and terms of service.
-                    #             </p>
-                    #         </div>
-                    #     </div>
-                    # """, unsafe_allow_html=True)
 
 
 
