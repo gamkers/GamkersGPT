@@ -27,7 +27,7 @@ from streamlit_lottie import st_lottie
 class SecurityAnalysisApp:
     def __init__(self):
         self.chat_model = ChatGroq(
-            groq_api_key="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",
+            groq_api_key="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",
             model_name="qwen-qwq-32b",
             temperature=0.7,
             max_tokens=None
