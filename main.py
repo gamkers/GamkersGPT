@@ -27,7 +27,7 @@ from streamlit_lottie import st_lottie
 class SecurityAnalysisApp:
     def __init__(self):
         self.chat_model = ChatGroq(
-            groq_api_key="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",
+            groq_api_key=st.secrets["groq_api_key"],
             model_name="qwen-qwq-32b",
             temperature=0.7,
             max_tokens=None
@@ -1527,7 +1527,7 @@ def main():
 
     try:
         # Get API key from secrets.toml or environment variable
-        groq_api_key = "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"
+        groq_api_key=st.secrets["groq_api_key"]
                 
         # Initialize the assistant
         st.session_state.assistant = CyberSecurityAssistant(groq_api_key=groq_api_key)
