@@ -1527,7 +1527,7 @@ def main():
 
     try:
         # Get API key from secrets.toml or environment variable
-        groq_api_key = "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"
+        groq_api_key = "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"
                 
         # Initialize the assistant
         st.session_state.assistant = CyberSecurityAssistant(groq_api_key=groq_api_key)
