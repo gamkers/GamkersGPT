@@ -1498,6 +1498,208 @@ def main():
         """, unsafe_allow_html=True)
     # Add custom CSS for modern UI - Kept original CSS from your code
 
+
+    st.markdown("""
+    <style>
+    html, body, [data-testid="stAppViewContainer"], .main {
+        background: #000 !important;
+        color: #10b981 !important;
+    }
+    body {
+        background-color: #000 !important;
+        color: #10b981 !important;
+        font-family: 'Inter', sans-serif;
+    }
+    .main-header {
+        padding: 1.5rem;
+        background-color: #101010;
+        border-radius: 12px;
+        margin-bottom: 1.5rem;
+        border: 1px solid #10b98144;
+        box-shadow: 0 4px 6px -1px #10b98122, 0 2px 4px -1px #10b98122;
+    }
+    .status-indicator {
+        width: 12px;
+        height: 12px;
+        background-color: #10b981;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 8px;
+        box-shadow: 0 0 0 #10b98177;
+        animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+        0% { box-shadow: 0 0 0 0 #10b98166; }
+        70% { box-shadow: 0 0 0 10px #10b98100; }
+        100% { box-shadow: 0 0 0 0 #10b98100; }
+    }
+    .glow-text {
+        color: #10b981;
+        font-weight: 500;
+        text-shadow: 0 0 8px #10b98188;
+    }
+    .sleek-card {
+        background-color: #101010;
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border: 1px solid #10b98144;
+        box-shadow: 0 4px 6px -1px #10b98122, 0 2px 4px -1px #10b98122;
+    }
+    .category-pill {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        background-color: #101010;
+        color: #10b981;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        margin-right: 0.5rem;
+        margin-bottom: 0.5rem;
+        border: 1px solid #10b98177;
+        transition: all 0.3s ease;
+    }
+    .category-pill:hover {
+        background-color: #10b98122;
+        color: #fff;
+        cursor: pointer;
+        border-color: #10b981;
+    }
+    .chat-container {
+        background-color: #101010;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-top: 1.5rem;
+        height: 500px;
+        overflow-y: auto;
+        border: 1px solid #10b98144;
+        box-shadow: 0 4px 6px -1px #10b98122, 0 2px 4px -1px #10b98122;
+    }
+    .message-container {
+        display: flex;
+        margin-bottom: 1.5rem;
+        gap: 12px;
+    }
+    .user-container { justify-content: flex-end; }
+    .assistant-container { justify-content: flex-start; }
+    .avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 0.875rem;
+        flex-shrink: 0;
+        background: #10b981;
+        color: #000;
+    }
+    .user-avatar { background-color: #10b981; color: #000; }
+    .assistant-avatar { background-color: #222; color: #10b981; }
+    .message-box {
+        padding: 1rem;
+        border-radius: 12px;
+        max-width: 90%;
+        min-width: 100px;
+        background: #101010;
+        color: #10b981;
+        border: 1px solid #10b98144;
+    }
+    .user-message {
+        background-color: #10b981;
+        color: #000;
+        border-top-right-radius: 0;
+    }
+    .assistant-message {
+        background-color: #101010;
+        color: #10b981;
+        border-top-left-radius: 0;
+        border: 1px solid #10b98144;
+    }
+    .typing-indicator {
+        display: flex;
+        align-items: center;
+        padding: 1rem;
+        background-color: #101010;
+        border-radius: 12px;
+        border-top-left-radius: 0;
+        min-width: 60px;
+        border: 1px solid #10b98144;
+    }
+    .typing-dot {
+        display: block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background-color: #10b981;
+        margin-right: 5px;
+        animation: bounce 1.3s linear infinite;
+    }
+    .typing-dot:nth-child(2) { animation-delay: 0.15s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.3s; margin-right: 0; }
+    @keyframes bounce {
+        0%, 60%, 100% { transform: translateY(0); }
+        30% { transform: translateY(-5px); }
+    }
+    .stButton>button {
+        background-color: #10b981;
+        color: #000;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    .stButton>button:hover {
+        background-color: #13d49d;
+        color: #000;
+        box-shadow: 0 4px 6px -1px #10b98122, 0 2px 4px -1px #10b98122;
+    }
+    .chat-container::-webkit-scrollbar { width: 6px; }
+    .chat-container::-webkit-scrollbar-track { background: #101010; }
+    .chat-container::-webkit-scrollbar-thumb {
+        background-color: #10b98144;
+        border-radius: 20px;
+        border: 2px solid #101010;
+    }
+    .chat-container::-webkit-scrollbar-thumb:hover { background: #10b981; }
+    div.row-widget.stRadio > div > label {
+        background-color: #101010;
+        border-radius: 8px;
+        padding: 6px 16px;
+        color: #10b981;
+        font-weight: 500;
+        border: 1px solid #10b98144;
+        transition: all 0.2s ease;
+    }
+    div.row-widget.stRadio > div > label:hover {
+        background-color: #10b98122;
+        color: #fff;
+        cursor: pointer;
+    }
+    div.row-widget.stRadio > div[role="radiogroup"] input[type="radio"]:checked + label {
+        background-color: #10b981;
+        color: #000;
+        border-color: #13d49d;
+    }
+    code, pre {
+        background-color: #000 !important;
+        color: #10b981 !important;
+        border-radius: 4px;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.95em;
+    }
+    pre {
+        padding: 1rem;
+        border-radius: 8px;
+        overflow-x: auto;
+        border: 1px solid #10b98144;
+    }
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    </style>
+""", unsafe_allow_html=True)
+
     # Initialize session state
     if 'assistant' not in st.session_state:
         st.session_state.assistant = None
