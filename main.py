@@ -2066,32 +2066,32 @@ def main():
         pass
     with st.sidebar:
         tabs = on_hover_tabs(
-            tabName=['Encryption', 'chat', 'Security Assessment','Training','Malware Analysis'],
-            iconName=['code', 'chat', 'info','home','computer'],
-            styles={
-                        'navtab': {
-                            'background-color': 'black',
-                            'color': 'greeh',
-                            'font-size': '16px',
-                            'transition': '.3s',
-                            'white-space': 'nowrap',
-                            'text-transform': 'uppercase'
-                        },
-                        'tabOptionsStyle': {
-                            ':hover': {'color': '#1A1A1A', 'background-color': 'black'}
-                        },
-                        'iconStyle': {
-                            'position': 'fixed',
-                            'left': '7.5px',
-                            'text-align': 'left'
-                        },
-                        'tabStyle': {
-                            'list-style-type': 'none',
-                            'margin-bottom': '30px',
-                            'padding-left': '30px'
-                        }
-                    }
-        )
+        tabName=['Encryption', 'chat', 'Security Assessment', 'Training', 'Malware Analysis'],
+        iconName=['lock', 'comments', 'shield-alt', 'graduation-cap', 'bug'],
+        styles={
+            'navtab': {
+                'background-color': 'black',
+                'color': 'green',  # Fixed typo: 'greeh' → 'green'
+                'font-size': '16px',
+                'transition': '.3s',
+                'white-space': 'nowrap',
+                'text-transform': 'uppercase'
+            },
+            'tabOptionsStyle': {
+                ':hover': {'color': '#1A1A1A', 'background-color': 'black'}
+            },
+            'iconStyle': {
+                'position': 'fixed',
+                'left': '7.5px',
+                'text-align': 'left'
+            },
+            'tabStyle': {
+                'list-style-type': 'none',
+                'margin-bottom': '30px',
+                'padding-left': '30px'
+            }
+        }
+    )
 
     if tabs == 'chat':
         chat()
