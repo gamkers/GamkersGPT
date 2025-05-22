@@ -2067,11 +2067,11 @@ def main():
     with st.sidebar:
         tabs = on_hover_tabs(
         tabName=['Encryption', 'chat', 'Security Assessment', 'Training', 'Malware Analysis'],
-        iconName=['lock', 'comments', 'shield-alt', 'graduation-cap', 'bug'],
+        iconName=['lock', 'comments', 'shield-alt', 'home', 'code'],
         styles={
             'navtab': {
                 'background-color': 'black',
-                'color': 'green',  # Fixed typo: 'greeh' → 'green'
+                'color': 'White', 
                 'font-size': '16px',
                 'transition': '.3s',
                 'white-space': 'nowrap',
