@@ -428,7 +428,7 @@ class CyberSecurityAssistant:
         self.prompt = ChatPromptTemplate.from_messages([
             (
                 "system",
-                """You are CyberGeni, an ethical hacking trainer who helps students understand cybersecurity concepts and practices. 
+                """You are GamkersGPT, an ethical hacking trainer who helps students understand cybersecurity concepts and practices. 
                 You assist students by generating explanations, code snippets, suggesting tools, or providing step-by-step instructions based on the task and scenario provided.
                 
                 All information you provide should be for educational purposes only. Emphasize ethical practices and legal boundaries in all responses.
@@ -490,7 +490,7 @@ class CyberSecurityAssistant:
                 url = f"https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch={cve_query}&resultsPerPage={limit}"
             
             headers = {
-                "User-Agent": "CyberGeni Educational Tool/1.0"
+                "User-Agent": "GamkersGPT Educational Tool/1.0"
             }
             
             response = requests.get(url, headers=headers)
@@ -1214,7 +1214,7 @@ def main():
         st.session_state.messages = []
     
     st.set_page_config(
-        page_title="CyberGeni AI", 
+        page_title="GamkersGPT AI", 
         page_icon="🔐", 
         layout="wide"
     )
@@ -1716,7 +1716,7 @@ def main():
     # Header with cyber security themed logo
     st.markdown("""
         <div class="main-header">
-            <h1 style="font-size: 2.75rem; color: #e2e8f0; margin-bottom: 0.5rem;">CyberGeni AI</h1>
+            <h1 style="font-size: 2.75rem; color: #e2e8f0; margin-bottom: 0.5rem;">GamkersGPT AI</h1>
             <p style="color: #a0aec0; font-size: 1.1rem;">
                 AI-powered cybersecurity training assistant for ethical hacking education by gamkers
             </p>
@@ -1733,7 +1733,7 @@ def main():
                 
         # Initialize the assistant
         st.session_state.assistant = CyberSecurityAssistant(groq_api_key=groq_api_key)
-        st.success("CyberGeni initialized successfully!")
+        st.success("GamkersGPT initialized successfully!")
                 
     except Exception as e:
         st.error(f"Error initializing assistant: {e}")
@@ -1836,7 +1836,7 @@ def main():
             st.markdown('</div>', unsafe_allow_html=True)
             
             # User input and processing
-            if prompt := st.chat_input("Ask CyberGeni...", key="user_input"):
+            if prompt := st.chat_input("Ask GamkersGPT...", key="user_input"):
                 if st.session_state.assistant is None:
                     st.warning("Please initialize the assistant first using the button in the sidebar.")
                 else:
