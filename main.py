@@ -1550,13 +1550,14 @@ def main():
                 st.markdown("""
                     <div class="sleek-card">
                         <h3 style="margin: 0 0 0.75rem 0; color: #e2e8f0; display: flex; align-items: center;">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.75rem;">
-                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                                <circle cx="12" cy="7" r="4"></circle>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.75rem;">
+                                <path d="M10.29 3.86L1.82 18a1 1 0 0 0 .86 1.5h18.64a1 1 0 0 0 .86-1.5L13.71 3.86a1 1 0 0 0-1.72 0z"></path>
+                                <line x1="12" y1="9" x2="12" y2="13"></line>
+                                <line x1="12" y1="17" x2="12.01" y2="17"></line>
                             </svg>
-                            Ethical Hacking Training
+                            Disclaimer: Ethical Use Only
                         </h3>
-                        <p style="color: #a0aec0; margin-bottom: 0;">Learn ethical hacking principles, tools, and methodologies through guided training. Get personalized instructions and hands-on practice for penetration testing and vulnerability assessment.</p>
+                        <p style="color: #a0aec0; margin-bottom: 0;">All cybersecurity content provided here is strictly for educational and ethical purposes. We do not support or encourage any unauthorized or illegal access to systems or networks. Always obtain proper permission before conducting any form of security testing.</p>
                     </div>
                 """, unsafe_allow_html=True)
             
