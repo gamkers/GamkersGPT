@@ -2295,9 +2295,9 @@ def main():
                                 with st.spinner("Searching for videos..."):
                                     try:
                                         video_result = search_youtube(f"{concept}")
-                                        if "Video found:" in video_result:
-                                            video_link = video_result.replace("Video found: ", "")
-                                            st.markdown(f"[🎥 Watch Tutorial Video]({video_link})")
+                                        if video_result:
+                                    
+                                            st.markdown(f"[🎥 Watch Tutorial Video]({video_result})")
                                         else:
                                             st.info("No video found for this concept")
                                     except Exception as e:
