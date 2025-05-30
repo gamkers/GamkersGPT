@@ -1363,7 +1363,7 @@ def main():
 
         .assistant-message {
             background-color: #334155;
-            color: #e2e8f0;
+            color: white;
             border-top-left-radius: 0;
         }
 
