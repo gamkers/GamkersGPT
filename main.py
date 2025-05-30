@@ -1797,7 +1797,7 @@ def main():
                             f"""
                             <div class="message-container assistant-container">
                                 <div class="avatar assistant-avatar">C</div>
-                                <div class="message-box assistant-message">{message['content'].replace("**","").replace("===","")</div>
+                                <div class="message-box assistant-message">{message['content'].replace("**","").replace("=====================================","")</div>
                             </div>
                             """,
                             unsafe_allow_html=True,
