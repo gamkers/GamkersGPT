@@ -1602,7 +1602,7 @@ def main():
         max-width: 90%;
         min-width: 100px;
         background: #101010;
-        color: #10b981;
+        color: white;
         border: 1px solid #10b98144;
     }
     .user-message {
@@ -1612,7 +1612,7 @@ def main():
     }
     .assistant-message {
         background-color: #101010;
-        color: #10b981;
+        color: white;
         border-top-left-radius: 0;
         border: 1px solid #10b98144;
     }
