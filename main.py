@@ -128,7 +128,7 @@ Requirements:
 5. Use "None identified" in findings array if no indicators are found
 6. Keep descriptions concise and focused on security implications
 
-Your response should be ONLY the JSON object with no additional text."""
+Your  should be ONLY the JSON object with no additional text."""
         )
         
         self.analysis_chain = LLMChain(
@@ -1797,7 +1797,7 @@ def main():
                             f"""
                             <div class="message-container assistant-container">
                                 <div class="avatar assistant-avatar">C</div>
-                                <div class="message-box assistant-message">{message['content']}</div>
+                                <div class="message-box assistant-message">{message['content'].replace("**","").replace("===","")</div>
                             </div>
                             """,
                             unsafe_allow_html=True,
