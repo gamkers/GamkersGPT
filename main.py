@@ -1224,7 +1224,7 @@ class CyberSecurityAssistant:
             9. Future trends or developments
             10. Resources for further learning
             
-            Make the explanation accessible but technically accurate, suitable for cybersecurity training.
+            Make the explanation accessible but technically accurate, suitable for cybersecurity training. and NOTE *Dont make it long paragrapgh*
             """
             
             response = self.llm.invoke(prompt)
