@@ -75,7 +75,155 @@ def search_ppt(query):
     except Exception as e:
         return f"Error searching for PPT: {str(e)}"
 
+def search_blogs(query):
+    """
+    Search for security blogs and articles related to the given concept
+    """
+    try:
+        # Target popular security blog sites and general blog content
+        blog_sites = [
+            "site:medium.com",
+            "site:dev.to", 
+            "site:hackernoon.com",
+            "site:infosec-handbook.eu",
+            "site:pentestlab.blog",
+            "site:portswigger.net/research",
+            "site:blog.securelayer7.net",
+            "site:blog.checkpoint.com",
+            "site:research.checkpoint.com"
+        ]
+        
+        # Try searching with different blog site constraints
+        for site in blog_sites:
+            blog_query = f"{query} {site}"
+            try:
+                for j in search(blog_query, tld="co.in", num=1, stop=1, pause=2):
+                    return f"Blog found: {j}"
+            except:
+                continue
+        
+        # If no specific site results, try general blog search
+        general_blog_query = f"{query} blog tutorial cybersecurity"
+        for j in search(general_blog_query, tld="co.in", num=1, stop=1, pause=2):
+            # Filter for likely blog URLs
+            if any(keyword in j.lower() for keyword in ['blog', 'medium.com', 'dev.to', 'hackernoon', 'tutorial', 'guide']):
+                return f"Blog found: {j}"
+        
+        return "Blog not found."
+        
+    except Exception as e:
+        return f"Error searching for blogs: {str(e)}"
 
+
+def search_poc_reports(query):
+    """
+    Search for Proof of Concept (PoC) exploits and vulnerability disclosure reports
+    """
+    try:
+        # Target sites known for security research, PoCs, and vulnerability disclosures
+        poc_sites = [
+            "site:github.com",
+            "site:exploit-db.com",
+            "site:cve.mitre.org",
+            "site:nvd.nist.gov",
+            "site:packetstormsecurity.com",
+            "site:seclists.org",
+            "site:securityfocus.com",
+            "site:rapid7.com/db",
+            "site:vulners.com",
+            "site:zerodayinitiative.com"
+        ]
+        
+        # PoC-specific search terms
+        poc_terms = ["exploit", "proof of concept", "PoC", "vulnerability", "CVE", "disclosure"]
+        
+        # Try searching with PoC sites and terms
+        for site in poc_sites:
+            for term in poc_terms:
+                poc_query = f"{query} {term} {site}"
+                try:
+                    for j in search(poc_query, tld="co.in", num=1, stop=1, pause=2):
+                        return f"PoC/Report found: {j}"
+                except:
+                    continue
+        
+        # Try general PoC search without site restrictions
+        general_poc_queries = [
+            f"{query} exploit proof of concept",
+            f"{query} vulnerability disclosure",
+            f"{query} CVE exploit",
+            f"{query} security advisory",
+            f"{query} PoC github"
+        ]
+        
+        for poc_query in general_poc_queries:
+            try:
+                for j in search(poc_query, tld="co.in", num=1, stop=1, pause=2):
+                    # Filter for likely PoC/vulnerability report URLs
+                    if any(keyword in j.lower() for keyword in ['exploit', 'cve', 'vulnerability', 'poc', 'github.com', 'security', 'advisory']):
+                        return f"PoC/Report found: {j}"
+            except:
+                continue
+        
+        return "PoC/Report not found."
+        
+    except Exception as e:
+        return f"Error searching for PoC/Reports: {str(e)}"
+
+
+# Usage example functions (optional helper functions)
+def search_vulnerability_databases(query):
+    """
+    Specifically search vulnerability databases for CVE information
+    """
+    try:
+        vuln_db_sites = [
+            "site:cve.mitre.org",
+            "site:nvd.nist.gov", 
+            "site:cvedetails.com",
+            "site:vuldb.com"
+        ]
+        
+        for site in vuln_db_sites:
+            vuln_query = f"{query} CVE {site}"
+            try:
+                for j in search(vuln_query, tld="co.in", num=1, stop=1, pause=2):
+                    return f"Vulnerability DB found: {j}"
+            except:
+                continue
+                
+        return "Vulnerability database entry not found."
+        
+    except Exception as e:
+        return f"Error searching vulnerability databases: {str(e)}"
+
+
+def search_security_advisories(query):
+    """
+    Search for official security advisories and vendor disclosures
+    """
+    try:
+        advisory_sites = [
+            "site:security.microsoft.com",
+            "site:support.apple.com/security",
+            "site:chromereleases.googleblog.com",
+            "site:mozilla.org/security",
+            "site:us-cert.cisa.gov",
+            "site:cert.org"
+        ]
+        
+        for site in advisory_sites:
+            advisory_query = f"{query} security advisory {site}"
+            try:
+                for j in search(advisory_query, tld="co.in", num=1, stop=1, pause=2):
+                    return f"Security Advisory found: {j}"
+            except:
+                continue
+                
+        return "Security advisory not found."
+        
+    except Exception as e:
+        return f"Error searching security advisories: {str(e)}"
 class SecurityAnalysisApp:
     def __init__(self):
         self.chat_model = ChatGroq(
@@ -2417,6 +2565,58 @@ def main():
                                 
                                 if videos_found == 0:
                                     st.info("No videos found for this concept")
+
+                            st.markdown("---")
+                            st.markdown("### 📝 Security Blogs & Articles")
+                            blog_col1, blog_col2 = st.columns(2)
+                            
+                            with blog_col1:
+                                st.markdown("#### Technical Blogs")
+                                with st.spinner("Searching for technical blogs..."):
+                                    blog_queries = [
+                                        f"{concept} security blog",
+                                        f"{concept} cybersecurity article",
+                                        f"{concept} penetration testing blog",
+                                        f"how to exploit {concept}"
+                                    ]
+                                    
+                                    blogs_found = False
+                                    for query in blog_queries:
+                                        try:
+                                            blog_result = search_blogs(query)
+                                            if "Blog found:" in blog_result:
+                                                blog_link = blog_result.replace("Blog found: ", "")
+                                                st.markdown(f"📝 [{query.title()}]({blog_link})")
+                                                blogs_found = True
+                                        except:
+                                            continue
+                                    
+                                    if not blogs_found:
+                                        st.info("No technical blogs found")
+                            
+                            with blog_col2:
+                                st.markdown("#### Security Research Articles")
+                                with st.spinner("Searching for research articles..."):
+                                    research_blog_queries = [
+                                        f"{concept} security research",
+                                        f"{concept} vulnerability analysis",
+                                        f"{concept} security analysis blog",
+                                        f"{concept} attack analysis"
+                                    ]
+                                    
+                                    research_blogs_found = False
+                                    for query in research_blog_queries:
+                                        try:
+                                            research_blog_result = search_blogs(query)
+                                            if "Blog found:" in research_blog_result:
+                                                research_blog_link = research_blog_result.replace("Blog found: ", "")
+                                                st.markdown(f"🔬 [{query.title()}]({research_blog_link})")
+                                                research_blogs_found = True
+                                        except:
+                                            continue
+                                    
+                                    if not research_blogs_found:
+                                        st.info("No research articles found")
                             
                             # Practice Labs Section
                             st.markdown("---")
