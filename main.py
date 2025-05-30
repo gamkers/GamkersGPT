@@ -2294,7 +2294,7 @@ def main():
                                 st.markdown("### 📺 Video Resources")
                                 with st.spinner("Searching for videos..."):
                                     try:
-                                        video_result = search_youtube(f"{concept} cybersecurity tutorial")
+                                        video_result = search_youtube(f"{concept}")
                                         if "Video found:" in video_result:
                                             video_link = video_result.replace("Video found: ", "")
                                             st.markdown(f"[🎥 Watch Tutorial Video]({video_link})")
@@ -2307,7 +2307,7 @@ def main():
                                 st.markdown("### 📄 PDF Documents")
                                 with st.spinner("Searching for PDFs..."):
                                     try:
-                                        pdf_result = search_pdf(f"{concept} security guide tutorial")
+                                        pdf_result = search_pdf(f"{concept}")
                                         if "PDF found:" in pdf_result:
                                             pdf_link = pdf_result.replace("PDF found: ", "")
                                             st.markdown(f"[📄 Download PDF Guide]({pdf_link})")
@@ -2320,7 +2320,7 @@ def main():
                                 st.markdown("### 🎯 PowerPoint Presentations")
                                 with st.spinner("Searching for presentations..."):
                                     try:
-                                        ppt_result = search_ppt(f"{concept} security presentation slides")
+                                        ppt_result = search_ppt(f"{concept}")
                                         if "PPT found:" in ppt_result:
                                             ppt_link = ppt_result.replace("PPT found: ", "")
                                             st.markdown(f"[📊 View Presentation]({ppt_link})")
