@@ -47,7 +47,7 @@ def search_youtube(query):
         if matches:
             video_id = matches[0]
             video_link = f"https://www.youtube.com/watch?v={video_id}"
-            return video_link
+             return f"Video found: {url}"
         else:
             return "Video not found."
             
@@ -2310,150 +2310,214 @@ def main():
                             
                             # Create columns for different resource types
                             col1, col2 = st.columns(2)
-                            col3, col4 = st.columns(2)
                             
                             with col1:
-                                st.markdown("### 📺 Video Resources")
-                                with st.spinner("Searching for videos..."):
-                                    try:
-                                        video_result = search_youtube(f"{concept}")
-                                        if video_result:
-                                    
-                                            st.markdown(f"[🎥 Watch Tutorial Video]({video_result})")
-                                        else:
-                                            st.info("No video found for this concept")
-                                    except Exception as e:
-                                        st.error(f"Error searching videos: {str(e)}")
-                            
-                            with col2:
                                 st.markdown("### 📄 PDF Documents")
                                 with st.spinner("Searching for PDFs..."):
-                                    try:
-                                        pdf_result = search_pdf(f"{concept}")
-                                        if "PDF found:" in pdf_result:
-                                            pdf_link = pdf_result.replace("PDF found: ", "")
-                                            st.markdown(f"[📄 Download PDF Guide]({pdf_link})")
-                                        else:
-                                            st.info("No PDF found for this concept")
-                                    except Exception as e:
-                                        st.error(f"Error searching PDFs: {str(e)}")
+                                    pdf_queries = [
+                                        f"{concept} security guide",
+                                        f"{concept} tutorial PDF",
+                                        f"{concept} whitepaper",
+                                        f"{concept} OWASP guide"
+                                    ]
+                                    
+                                    pdf_found = False
+                                    for i, query in enumerate(pdf_queries):
+                                        try:
+                                            pdf_result = search_pdf(query)
+                                            if "PDF found:" in pdf_result:
+                                                pdf_link = pdf_result.replace("PDF found: ", "")
+                                                st.markdown(f"📄 [{query.title()}]({pdf_link})")
+                                                pdf_found = True
+                                                if i >= 2:  # Limit to 3 PDFs
+                                                    break
+                                        except:
+                                            continue
+                                    
+                                    if not pdf_found:
+                                        st.info("No PDF documents found")
                             
-                            with col3:
+                            with col2:
                                 st.markdown("### 🎯 PowerPoint Presentations")
                                 with st.spinner("Searching for presentations..."):
-                                    try:
-                                        ppt_result = search_ppt(f"{concept}")
-                                        if "PPT found:" in ppt_result:
-                                            ppt_link = ppt_result.replace("PPT found: ", "")
-                                            st.markdown(f"[📊 View Presentation]({ppt_link})")
-                                        else:
-                                            st.info("No presentation found for this concept")
-                                    except Exception as e:
-                                        st.error(f"Error searching presentations: {str(e)}")
+                                    ppt_queries = [
+                                        f"{concept} security presentation",
+                                        f"{concept} slides tutorial",
+                                        f"{concept} PowerPoint cybersecurity"
+                                    ]
+                                    
+                                    ppt_found = False
+                                    for i, query in enumerate(ppt_queries):
+                                        try:
+                                            ppt_result = search_ppt(query)
+                                            if "PPT found:" in ppt_result:
+                                                ppt_link = ppt_result.replace("PPT found: ", "")
+                                                st.markdown(f"📊 [{query.title()}]({ppt_link})")
+                                                ppt_found = True
+                                                if i >= 2:  # Limit to 3 PPTs
+                                                    break
+                                        except:
+                                            continue
+                                    
+                                    if not ppt_found:
+                                        st.info("No presentations found")
                             
-                            with col4:
-                                st.markdown("### 🔬 Research Papers")
-                                with st.spinner("Searching for research papers..."):
+                            # Research Papers Section
+                            st.markdown("### 🔬 Research Papers")
+                            with st.spinner("Searching for research papers..."):
+                                research_queries = [
+                                    f"{concept} security research paper",
+                                    f"{concept} academic paper cybersecurity",
+                                    f"{concept} vulnerability research"
+                                ]
+                                
+                                research_found = False
+                                for i, query in enumerate(research_queries):
                                     try:
-                                        # Enhanced search for academic papers
-                                        research_result = search_pdf(f"{concept} security research paper academic")
+                                        research_result = search_pdf(query)
                                         if "PDF found:" in research_result:
                                             research_link = research_result.replace("PDF found: ", "")
-                                            st.markdown(f"[📋 Read Research Paper]({research_link})")
-                                        else:
-                                            st.info("No research paper found for this concept")
-                                    except Exception as e:
-                                        st.error(f"Error searching research papers: {str(e)}")
+                                            st.markdown(f"📋 [{query.title()}]({research_link})")
+                                            research_found = True
+                                            if i >= 2:  # Limit to 3 research papers
+                                                break
+                                    except:
+                                        continue
+                                
+                                if not research_found:
+                                    st.info("No research papers found")
                             
-                            # Additional comprehensive search section
+                            # YouTube Videos Section - Embedded
+                            st.markdown("### 📺 Video Tutorials")
+                            with st.spinner("Searching and loading videos..."):
+                                video_queries = [
+                                    f"{concept} cybersecurity explained",
+                                    f"{concept} tutorial",
+                                    f"{concept} attack demonstration",
+                                    f"how to prevent {concept} attacks"
+                                ]
+                                
+                                videos_found = 0
+                                video_cols = st.columns(2)  # 2 columns for videos
+                                
+                                for i, query in enumerate(video_queries):
+                                    try:
+                                        video_result = search_youtube(query)
+                                        if "Video found:" in video_result:
+                                            video_url = video_result.replace("Video found: ", "")
+                                            
+                                            # Extract video ID from YouTube URL
+                                            if "youtube.com/watch?v=" in video_url:
+                                                video_id = video_url.split("watch?v=")[1].split("&")[0]
+                                            elif "youtu.be/" in video_url:
+                                                video_id = video_url.split("youtu.be/")[1].split("?")[0]
+                                            else:
+                                                continue
+                                            
+                                            # Display embedded video
+                                            with video_cols[videos_found % 2]:
+                                                st.markdown(f"**{query.title()}**")
+                                                st.video(f"https://www.youtube.com/watch?v={video_id}")
+                                            
+                                            videos_found += 1
+                                            if videos_found >= 4:  # Limit to 4 videos
+                                                break
+                                    except:
+                                        continue
+                                
+                                if videos_found == 0:
+                                    st.info("No videos found for this concept")
+                            
+                            # Practice Labs Section
                             st.markdown("---")
-                            st.markdown("### 🌐 Comprehensive Resource Search")
+                            st.markdown("### 🧪 Practice Labs & Exercises")
+                            with st.spinner("Searching for hands-on labs..."):
+                                lab_queries = [
+                                    f"{concept} lab exercise",
+                                    f"{concept} hands-on tutorial",
+                                    f"{concept} practical demonstration",
+                                    f"{concept} CTF challenge"
+                                ]
+                                
+                                labs_found = False
+                                for query in lab_queries:
+                                    try:
+                                        lab_result = search_pdf(query)
+                                        if "PDF found:" in lab_result:
+                                            lab_link = lab_result.replace("PDF found: ", "")
+                                            st.markdown(f"🧪 [{query.title()}]({lab_link})")
+                                            labs_found = True
+                                    except:
+                                        continue
+                                
+                                if not labs_found:
+                                    st.info("No practice labs found")
                             
-                            search_col1, search_col2 = st.columns(2)
+                            # Assessment Materials Section
+                            st.markdown("### 📋 Assessment Materials")
+                            with st.spinner("Searching for assessment materials..."):
+                                assessment_queries = [
+                                    f"{concept} quiz questions",
+                                    f"{concept} exam preparation",
+                                    f"{concept} practice test",
+                                    f"{concept} assessment PDF"
+                                ]
+                                
+                                assessments_found = False
+                                for query in assessment_queries:
+                                    try:
+                                        assessment_result = search_pdf(query)
+                                        if "PDF found:" in assessment_result:
+                                            assessment_link = assessment_result.replace("PDF found: ", "")
+                                            st.markdown(f"📋 [{query.title()}]({assessment_link})")
+                                            assessments_found = True
+                                    except:
+                                        continue
+                                
+                                if not assessments_found:
+                                    st.info("No assessment materials found")
                             
-                            with search_col1:
-                                if st.button("🔍 Search More Videos", key=f"more_videos_{concept}"):
-                                    with st.spinner("Searching for additional videos..."):
-                                        search_queries = [
-                                            f"{concept} cybersecurity explained",
-                                            f"{concept} attack demonstration",
-                                            f"{concept} prevention techniques",
-                                            f"how to prevent {concept} attacks"
-                                        ]
-                                        
-                                        st.markdown("#### Additional Video Resources:")
-                                        for i, query in enumerate(search_queries):
-                                            try:
-                                                video_result = search_youtube(query)
-                                                if "Video found:" in video_result:
-                                                    video_link = video_result.replace("Video found: ", "")
-                                                    st.markdown(f"{i+1}. [🎥 {query.title()}]({video_link})")
-                                            except:
-                                                continue
-                            
-                            with search_col2:
-                                if st.button("📚 Search More Documents", key=f"more_docs_{concept}"):
-                                    with st.spinner("Searching for additional documents..."):
-                                        search_queries = [
-                                            f"{concept} security whitepaper",
-                                            f"{concept} vulnerability assessment",
-                                            f"{concept} mitigation strategies",
-                                            f"{concept} OWASP guide"
-                                        ]
-                                        
-                                        st.markdown("#### Additional Document Resources:")
-                                        for i, query in enumerate(search_queries):
-                                            try:
-                                                pdf_result = search_pdf(query)
-                                                if "PDF found:" in pdf_result:
-                                                    pdf_link = pdf_result.replace("PDF found: ", "")
-                                                    st.markdown(f"{i+1}. [📄 {query.title()}]({pdf_link})")
-                                            except:
-                                                continue
-                            
-                            # Interactive learning section
+                            # Additional Resources Section
                             st.markdown("---")
-                            st.markdown("### 🎯 Interactive Learning")
+                            st.markdown("### 🌐 Additional Learning Resources")
                             
-                            learning_col1, learning_col2 = st.columns(2)
+                            additional_col1, additional_col2 = st.columns(2)
                             
-                            with learning_col1:
-                                if st.button("🧪 Find Practice Labs", key=f"labs_{concept}"):
-                                    with st.spinner("Searching for hands-on labs..."):
-                                        lab_queries = [
-                                            f"{concept} lab exercise",
-                                            f"{concept} hands-on tutorial",
-                                            f"{concept} practical demonstration"
-                                        ]
-                                        
-                                        st.markdown("#### Practice Labs & Exercises:")
-                                        for query in lab_queries:
-                                            try:
-                                                lab_result = search_pdf(query)
-                                                if "PDF found:" in lab_result:
-                                                    lab_link = lab_result.replace("PDF found: ", "")
-                                                    st.markdown(f"[🧪 {query.title()}]({lab_link})")
-                                            except:
-                                                continue
+                            with additional_col1:
+                                st.markdown("#### Security Tools & Documentation")
+                                with st.spinner("Searching for tools and documentation..."):
+                                    tool_queries = [
+                                        f"{concept} security tools",
+                                        f"{concept} detection tools",
+                                        f"{concept} prevention tools"
+                                    ]
+                                    
+                                    for query in tool_queries:
+                                        try:
+                                            tool_result = search_pdf(query)
+                                            if "PDF found:" in tool_result:
+                                                tool_link = tool_result.replace("PDF found: ", "")
+                                                st.markdown(f"🔧 [{query.title()}]({tool_link})")
+                                        except:
+                                            continue
                             
-                            with learning_col2:
-                                if st.button("📋 Find Assessment Materials", key=f"assessment_{concept}"):
-                                    with st.spinner("Searching for assessment materials..."):
-                                        assessment_queries = [
-                                            f"{concept} quiz questions",
-                                            f"{concept} exam preparation",
-                                            f"{concept} practice test"
-                                        ]
-                                        
-                                        st.markdown("#### Assessment Materials:")
-                                        for query in assessment_queries:
-                                            try:
-                                                assessment_result = search_pdf(query)
-                                                if "PDF found:" in assessment_result:
-                                                    assessment_link = assessment_result.replace("PDF found: ", "")
-                                                    st.markdown(f"[📋 {query.title()}]({assessment_link})")
-                                            except:
-                                                continue
+                            with additional_col2:
+                                st.markdown("#### Industry Standards & Best Practices")
+                                with st.spinner("Searching for standards and best practices..."):
+                                    standard_queries = [
+                                        f"{concept} best practices",
+                                        f"{concept} security standards",
+                                        f"{concept} compliance guide"
+                                    ]
+                                    
+                                    for query in standard_queries:
+                                        try:
+                                            standard_result = search_pdf(query)
+                                            if "PDF found:" in standard_result:
+                                                standard_link = standard_result.replace("PDF found: ", "")
+                                                st.markdown(f"📜 [{query.title()}]({standard_link})")
+                                        except:
+                                            continue
                             
                             # Save concept for future reference
                             if 'studied_concepts' not in st.session_state:
@@ -2464,12 +2528,26 @@ def main():
                                 st.success(f"✅ {concept} added to your study history!")
                             
                             # Show study progress
-                            if len(st.session_state.studied_concepts) > 1:
+                            if len(st.session_state.studied_concepts) > 0:
                                 st.markdown("---")
                                 st.markdown("### 📈 Your Study Progress")
-                                st.write(f"Concepts studied: {', '.join(st.session_state.studied_concepts)}")
-                                st.progress(min(len(st.session_state.studied_concepts) / 10, 1.0))
-                                st.caption(f"Progress: {len(st.session_state.studied_concepts)}/10 concepts mastered")
+                                
+                                progress_col1, progress_col2 = st.columns(2)
+                                
+                                with progress_col1:
+                                    st.write(f"**Concepts studied:** {len(st.session_state.studied_concepts)}")
+                                    st.write(f"**Current concept:** {concept}")
+                                    
+                                with progress_col2:
+                                    progress_value = min(len(st.session_state.studied_concepts) / 10, 1.0)
+                                    st.progress(progress_value)
+                                    st.caption(f"Progress: {len(st.session_state.studied_concepts)}/10 concepts mastered")
+                                
+                                # Display studied concepts
+                                if len(st.session_state.studied_concepts) > 1:
+                                    st.markdown("**Previously studied concepts:**")
+                                    concept_tags = " • ".join(st.session_state.studied_concepts[:-1])  # Exclude current concept
+                                    st.write(concept_tags)
                         
             elif training_type == "CTF Challenge":
                 ctf_difficulty = st.select_slider(
