@@ -47,7 +47,7 @@ def search_youtube(query):
         if matches:
             video_id = matches[0]
             video_link = f"https://www.youtube.com/watch?v={video_id}"
-            return f"Video found: {url}"
+            return {url}
         else:
             return "Video not found."
             
@@ -2403,21 +2403,10 @@ def main():
                                 for i, query in enumerate(video_queries):
                                     try:
                                         video_result = search_youtube(query)
-                                        if "Video found:" in video_result:
-                                            video_url = video_result.replace("Video found: ", "")
-                                            
-                                            # Extract video ID from YouTube URL
-                                            if "youtube.com/watch?v=" in video_url:
-                                                video_id = video_url.split("watch?v=")[1].split("&")[0]
-                                            elif "youtu.be/" in video_url:
-                                                video_id = video_url.split("youtu.be/")[1].split("?")[0]
-                                            else:
-                                                continue
-                                            
-                                            # Display embedded video
+                                        st.write(video_result)
+                                        if video_result:
                                             with video_cols[videos_found % 2]:
-                                                st.markdown(f"**{query.title()}**")
-                                                st.video(f"https://www.youtube.com/watch?v={video_id}")
+                                                st.video(video_result)
                                             
                                             videos_found += 1
                                             if videos_found >= 4:  # Limit to 4 videos
