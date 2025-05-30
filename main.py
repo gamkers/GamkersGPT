@@ -1223,7 +1223,7 @@ def main():
         <style>
         /* Base styles and typography */
         body {
-            background-color: #0f172a;
+            background-color: linear-gradient(to bottom, rgb(3, 7, 18), rgb(17, 24, 39));
             color: #e2e8f0;
             font-family: 'Inter', sans-serif;
         }
@@ -1231,7 +1231,7 @@ def main():
         /* Main header styling */
         .main-header {
             padding: 1.5rem;
-            background-color: black;
+            background-color: linear-gradient(to bottom, rgb(3, 7, 18), rgb(17, 24, 39));
             border-radius: 12px;
             margin-bottom: 1.5rem;
             border: 1px solid rgba(148, 163, 184, 0.1);
@@ -1502,7 +1502,7 @@ def main():
     st.markdown("""
     <style>
     html, body, [data-testid="stAppViewContainer"], .main {
-        background: #000 !important;
+        background: linear-gradient(to bottom, rgb(3, 7, 18), rgb(17, 24, 39)) !important;
         color: #10b981 !important;
     }
     body {
@@ -1512,7 +1512,7 @@ def main():
     }
     .main-header {
         padding: 1.5rem;
-        background-color: #101010;
+        background: linear-gradient(to bottom, rgb(3, 7, 18), rgb(17, 24, 39));
         border-radius: 12px;
         margin-bottom: 1.5rem;
         border: 1px solid #10b98144;
