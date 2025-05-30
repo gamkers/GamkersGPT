@@ -26,11 +26,33 @@ from youtubesearchpython import VideosSearch
 from googlesearch import search
 def search_youtube(query):
     try:
-        customSearch = VideosSearch(query, limit=1)
-        video_link = customSearch.result()['result'][0]['link']
-        return f"Video found: {video_link}"
-    except:
-        return "Video not found."
+        import requests
+        import re
+        from urllib.parse import quote
+        
+        # Format the search query
+        search_query = quote(query)
+        search_url = f"https://www.youtube.com/results?search_query={search_query}"
+        
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        }
+        
+        response = requests.get(search_url, headers=headers, timeout=10)
+        
+        # Extract video ID from the response
+        video_pattern = r'"videoId":"([^"]+)"'
+        matches = re.findall(video_pattern, response.text)
+        
+        if matches:
+            video_id = matches[0]
+            video_link = f"https://www.youtube.com/watch?v={video_id}"
+            return video_link
+        else:
+            return "Video not found."
+            
+    except Exception as e:
+        return f"Error searching YouTube: {str(e)}"
 
 
 def search_pdf(query):
