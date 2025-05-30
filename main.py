@@ -47,7 +47,7 @@ def search_youtube(query):
         if matches:
             video_id = matches[0]
             video_link = f"https://www.youtube.com/watch?v={video_id}"
-            return {url}
+            return video_link
         else:
             return "Video not found."
             
