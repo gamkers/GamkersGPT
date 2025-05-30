@@ -2539,8 +2539,8 @@ def main():
                             st.markdown("### 📺 Video Tutorials")
                             with st.spinner("Searching and loading videos..."):
                                 video_queries = [
+                                    f"{concept}",
                                     f"{concept} full course",
-                                    f"{concept} practical",
                                     f"{concept} attack demonstration",
                                     f"how to prevent {concept} attacks"
                                 ]
