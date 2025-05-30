@@ -2598,7 +2598,7 @@ def main():
                                 st.markdown("#### Security Research Articles")
                                 with st.spinner("Searching for research articles..."):
                                     research_blog_queries = [
-                                        f"{concept} security research",
+                                        f"{concept} POC",
                                         f"{concept} vulnerability analysis",
                                         f"{concept} security analysis blog",
                                         f"{concept} attack analysis"
@@ -2607,9 +2607,9 @@ def main():
                                     research_blogs_found = False
                                     for query in research_blog_queries:
                                         try:
-                                            research_blog_result = search_blogs(query)
-                                            if "Blog found:" in research_blog_result:
-                                                research_blog_link = research_blog_result.replace("Blog found: ", "")
+                                            research_blog_result = search_poc_reports(query)
+                                            if "PoC/Report found:" in research_blog_result:
+                                                research_blog_link = research_blog_result.replace("PoC/Report found: ", "")
                                                 st.markdown(f"🔬 [{query.title()}]({research_blog_link})")
                                                 research_blogs_found = True
                                         except:
