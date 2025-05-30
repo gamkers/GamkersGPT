@@ -2391,8 +2391,8 @@ def main():
                             st.markdown("### 📺 Video Tutorials")
                             with st.spinner("Searching and loading videos..."):
                                 video_queries = [
-                                    f"{concept} cybersecurity explained",
-                                    f"{concept} tutorial",
+                                    f"{concept} full course",
+                                    f"{concept} practical",
                                     f"{concept} attack demonstration",
                                     f"how to prevent {concept} attacks"
                                 ]
@@ -2403,9 +2403,10 @@ def main():
                                 for i, query in enumerate(video_queries):
                                     try:
                                         video_result = search_youtube(query)
-                                        st.write(video_result)
+            
                                         if video_result:
                                             with video_cols[videos_found % 2]:
+                                                st.markdown(f"**{query.title()}**")
                                                 st.video(video_result)
                                             
                                             videos_found += 1
