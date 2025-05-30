@@ -22,6 +22,36 @@ from docx import Document
 import subprocess
 import tempfile
 from streamlit_lottie import st_lottie
+from youtubesearchpython import VideosSearch
+from googlesearch import search
+def search_youtube(query):
+    try:
+        customSearch = VideosSearch(query, limit=1)
+        video_link = customSearch.result()['result'][0]['link']
+        return f"Video found: {video_link}"
+    except:
+        return "Video not found."
+
+
+def search_pdf(query):
+    try:
+        pdf_query = f"filetype:pdf {query}"
+        for j in search(pdf_query, tld="co.in", num=1, stop=1, pause=2):
+            if ".pdf" in j:
+                return f"PDF found: {j}"
+        return "PDF not found."
+    except Exception as e:
+        return f"Error searching for PDF: {str(e)}"
+
+def search_ppt(query):
+    try:
+        ppt_query = f"filetype:ppt OR filetype:pptx {query}"
+        for j in search(ppt_query, tld="co.in", num=1, stop=1, pause=2):
+            if ".ppt" in j or ".pptx" in j:
+                return f"PPT found: {j}"
+        return "PPT not found."
+    except Exception as e:
+        return f"Error searching for PPT: {str(e)}"
 
 
 class SecurityAnalysisApp:
@@ -2237,17 +2267,187 @@ def main():
             )
             
             if training_type == "Security Concept Explanation":
-                concept = st.text_input("Enter security concept", placeholder="Example: XSS, CSRF, JWT")
+    concept = st.text_input("Enter security concept", placeholder="Example: XSS, CSRF, JWT")
+    
+    if st.button("Generate Explanation", key="concept_explain_btn"):
+        if st.session_state.assistant is None:
+            st.warning("Please initialize assistant first")
+        elif not concept:
+            st.warning("Please enter a security concept")
+        else:
+            with st.spinner(f"Generating explanation for {concept}..."):
+                # Get the text explanation from your assistant
+                result = st.session_state.assistant.explain_security_concept(concept)
                 
-                if st.button("Generate Explanation", key="concept_explain_btn"):
-                    if st.session_state.assistant is None:
-                        st.warning("Please initialize assistant first")
-                    elif not concept:
-                        st.warning("Please enter a security concept")
-                    else:
-                        with st.spinner(f"Generating explanation for {concept}..."):
-                            result = st.session_state.assistant.explain_security_concept(concept)
-                            st.markdown(result)
+                # Display the explanation
+                st.markdown("## 📚 Concept Explanation")
+                st.markdown(result)
+                
+                # Add resource search section
+                st.markdown("## 🔍 Additional Resources")
+                
+                # Create columns for different resource types
+                col1, col2 = st.columns(2)
+                col3, col4 = st.columns(2)
+                
+                with col1:
+                    st.markdown("### 📺 Video Resources")
+                    with st.spinner("Searching for videos..."):
+                        try:
+                            video_result = search_youtube(f"{concept} cybersecurity tutorial")
+                            if "Video found:" in video_result:
+                                video_link = video_result.replace("Video found: ", "")
+                                st.markdown(f"[🎥 Watch Tutorial Video]({video_link})")
+                            else:
+                                st.info("No video found for this concept")
+                        except Exception as e:
+                            st.error(f"Error searching videos: {str(e)}")
+                
+                with col2:
+                    st.markdown("### 📄 PDF Documents")
+                    with st.spinner("Searching for PDFs..."):
+                        try:
+                            pdf_result = search_pdf(f"{concept} security guide tutorial")
+                            if "PDF found:" in pdf_result:
+                                pdf_link = pdf_result.replace("PDF found: ", "")
+                                st.markdown(f"[📄 Download PDF Guide]({pdf_link})")
+                            else:
+                                st.info("No PDF found for this concept")
+                        except Exception as e:
+                            st.error(f"Error searching PDFs: {str(e)}")
+                
+                with col3:
+                    st.markdown("### 🎯 PowerPoint Presentations")
+                    with st.spinner("Searching for presentations..."):
+                        try:
+                            ppt_result = search_ppt(f"{concept} security presentation slides")
+                            if "PPT found:" in ppt_result:
+                                ppt_link = ppt_result.replace("PPT found: ", "")
+                                st.markdown(f"[📊 View Presentation]({ppt_link})")
+                            else:
+                                st.info("No presentation found for this concept")
+                        except Exception as e:
+                            st.error(f"Error searching presentations: {str(e)}")
+                
+                with col4:
+                    st.markdown("### 🔬 Research Papers")
+                    with st.spinner("Searching for research papers..."):
+                        try:
+                            # Enhanced search for academic papers
+                            research_result = search_pdf(f"{concept} security research paper academic")
+                            if "PDF found:" in research_result:
+                                research_link = research_result.replace("PDF found: ", "")
+                                st.markdown(f"[📋 Read Research Paper]({research_link})")
+                            else:
+                                st.info("No research paper found for this concept")
+                        except Exception as e:
+                            st.error(f"Error searching research papers: {str(e)}")
+                
+                # Additional comprehensive search section
+                st.markdown("---")
+                st.markdown("### 🌐 Comprehensive Resource Search")
+                
+                search_col1, search_col2 = st.columns(2)
+                
+                with search_col1:
+                    if st.button("🔍 Search More Videos", key=f"more_videos_{concept}"):
+                        with st.spinner("Searching for additional videos..."):
+                            search_queries = [
+                                f"{concept} cybersecurity explained",
+                                f"{concept} attack demonstration",
+                                f"{concept} prevention techniques",
+                                f"how to prevent {concept} attacks"
+                            ]
+                            
+                            st.markdown("#### Additional Video Resources:")
+                            for i, query in enumerate(search_queries):
+                                try:
+                                    video_result = search_youtube(query)
+                                    if "Video found:" in video_result:
+                                        video_link = video_result.replace("Video found: ", "")
+                                        st.markdown(f"{i+1}. [🎥 {query.title()}]({video_link})")
+                                except:
+                                    continue
+                
+                with search_col2:
+                    if st.button("📚 Search More Documents", key=f"more_docs_{concept}"):
+                        with st.spinner("Searching for additional documents..."):
+                            search_queries = [
+                                f"{concept} security whitepaper",
+                                f"{concept} vulnerability assessment",
+                                f"{concept} mitigation strategies",
+                                f"{concept} OWASP guide"
+                            ]
+                            
+                            st.markdown("#### Additional Document Resources:")
+                            for i, query in enumerate(search_queries):
+                                try:
+                                    pdf_result = search_pdf(query)
+                                    if "PDF found:" in pdf_result:
+                                        pdf_link = pdf_result.replace("PDF found: ", "")
+                                        st.markdown(f"{i+1}. [📄 {query.title()}]({pdf_link})")
+                                except:
+                                    continue
+                
+                # Interactive learning section
+                st.markdown("---")
+                st.markdown("### 🎯 Interactive Learning")
+                
+                learning_col1, learning_col2 = st.columns(2)
+                
+                with learning_col1:
+                    if st.button("🧪 Find Practice Labs", key=f"labs_{concept}"):
+                        with st.spinner("Searching for hands-on labs..."):
+                            lab_queries = [
+                                f"{concept} lab exercise",
+                                f"{concept} hands-on tutorial",
+                                f"{concept} practical demonstration"
+                            ]
+                            
+                            st.markdown("#### Practice Labs & Exercises:")
+                            for query in lab_queries:
+                                try:
+                                    lab_result = search_pdf(query)
+                                    if "PDF found:" in lab_result:
+                                        lab_link = lab_result.replace("PDF found: ", "")
+                                        st.markdown(f"[🧪 {query.title()}]({lab_link})")
+                                except:
+                                    continue
+                
+                with learning_col2:
+                    if st.button("📋 Find Assessment Materials", key=f"assessment_{concept}"):
+                        with st.spinner("Searching for assessment materials..."):
+                            assessment_queries = [
+                                f"{concept} quiz questions",
+                                f"{concept} exam preparation",
+                                f"{concept} practice test"
+                            ]
+                            
+                            st.markdown("#### Assessment Materials:")
+                            for query in assessment_queries:
+                                try:
+                                    assessment_result = search_pdf(query)
+                                    if "PDF found:" in assessment_result:
+                                        assessment_link = assessment_result.replace("PDF found: ", "")
+                                        st.markdown(f"[📋 {query.title()}]({assessment_link})")
+                                except:
+                                    continue
+                
+                # Save concept for future reference
+                if 'studied_concepts' not in st.session_state:
+                    st.session_state.studied_concepts = []
+                
+                if concept not in st.session_state.studied_concepts:
+                    st.session_state.studied_concepts.append(concept)
+                    st.success(f"✅ {concept} added to your study history!")
+                
+                # Show study progress
+                if len(st.session_state.studied_concepts) > 1:
+                    st.markdown("---")
+                    st.markdown("### 📈 Your Study Progress")
+                    st.write(f"Concepts studied: {', '.join(st.session_state.studied_concepts)}")
+                    st.progress(min(len(st.session_state.studied_concepts) / 10, 1.0))
+                    st.caption(f"Progress: {len(st.session_state.studied_concepts)}/10 concepts mastered")
             
             elif training_type == "CTF Challenge":
                 ctf_difficulty = st.select_slider(
