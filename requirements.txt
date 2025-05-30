@@ -6,3 +6,5 @@ streamlit-on-Hover-tabs
 streamlit-lottie
 python-docx
 cryptography
+youtube-search-python
+google
