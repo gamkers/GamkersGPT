@@ -628,7 +628,7 @@ class CyberSecurityAssistant:
             max_tokens=None,
             timeout=None,
             max_retries=2,
-            xai_api_key=st.secrets["xapi"],,
+            xai_api_key=st.secrets["xapi"],
         )
         
         # self.llm = ChatGroq(
