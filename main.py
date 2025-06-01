@@ -1946,6 +1946,20 @@ def main():
     """, unsafe_allow_html=True)
 
     try:
+        import random
+        
+        # Define your API keys
+        groq_api_keys = [
+            st.secrets["groq_api_key"],
+            st.secrets["groq_api_key1"],
+            st.secrets["groq_api_key2"],
+            st.secrets["groq_api_key3"],
+            st.secrets["groq_api_key4"],
+            st.secrets["groq_api_key5"]
+        ]
+        
+        # Randomly select an API key
+        groq_api_key = random.choice(groq_api_keys)
         # Get API key from secrets.toml or environment variable
         groq_api_key=st.secrets["groq_api_key"]
                 
