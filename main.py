@@ -640,7 +640,7 @@ class CyberSecurityAssistant:
         #     groq_api_key=groq_api_key,
         # )
         self.llm = ChatGroq(
-            model_name="llama-3.3-70b-versatile",
+            model_name="qwen-qwq-32b",
             temperature=0.3,
             max_tokens=1024,  # Set specific limit based on your needs
             timeout=60,
