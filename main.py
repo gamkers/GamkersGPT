@@ -631,15 +631,23 @@ class CyberSecurityAssistant:
         #     xai_api_key=st.secrets["xapi"],
         # )
         
+        # self.llm = ChatGroq(
+        #     model="llama-3.3-70b-versatile",
+        #     temperature=0.3,
+        #     max_tokens=None,
+        #     timeout=None,
+        #     max_retries=2,
+        #     groq_api_key=groq_api_key,
+        # )
         self.llm = ChatGroq(
-            model="llama-3.3-70b-versatile",
+            model="llama-3.1-8b-instant",  # Much smaller model, faster and cheaper
             temperature=0.3,
-            max_tokens=None,
-            timeout=None,
+            max_tokens=512,  # Set reasonable limit instead of None
+            timeout=30,  # Set timeout to avoid long waits
             max_retries=2,
             groq_api_key=groq_api_key,
         )
-        
+
         self.prompt = ChatPromptTemplate.from_messages([
             (
                 "system",
