@@ -670,14 +670,14 @@ class CyberSecurityAssistant:
         try:
             # Add query to conversation history
             self.conversation_history.append({"role": "user", "content": user_query})
-            
+            print("user: "+user_query)
             # Process the query
             response = self.chain.invoke({"query": user_query})
             response_text = response.content
             
             # Add response to conversation history
             self.conversation_history.append({"role": "assistant", "content": response_text})
-            
+            print("bot: "+response_text)
             return response_text
         except Exception as e:
             return f"Error processing your query: {str(e)}"
