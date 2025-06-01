@@ -621,24 +621,14 @@ def display_analysis_results(analysis: Dict):
 class CyberSecurityAssistant:
     def __init__(self, groq_api_key):
         
-        from langchain_google_genai import ChatGoogleGenerativeAI
-    
-        self.llm = ChatGoogleGenerativeAI(
-            model="gemini-1.5-pro",
+        self.llm = ChatGroq(
+            model="llama-3.3-70b-versatile",
             temperature=0.3,
             max_tokens=None,
             timeout=None,
             max_retries=2,
-            google_api_key="AIzaSyDQPDBmS_FRuyzuWQdV7gcSBujE4wuR-bc",
+            groq_api_key=groq_api_key,
         )
-        # self.llm = ChatGroq(
-        #     model="llama-3.3-70b-versatile",
-        #     temperature=0.3,
-        #     max_tokens=None,
-        #     timeout=None,
-        #     max_retries=2,
-        #     groq_api_key=groq_api_key,
-        # )
         
         self.prompt = ChatPromptTemplate.from_messages([
             (
