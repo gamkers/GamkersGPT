@@ -24,7 +24,7 @@ import tempfile
 from streamlit_lottie import st_lottie
 from youtubesearchpython import VideosSearch
 from googlesearch import search
-
+ from langchain_xai import ChatXAI
 
 
 
