@@ -9,3 +9,4 @@ cryptography
 youtube-search-python
 google
 langchain-google-genai
+langchain-xai
