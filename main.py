@@ -815,7 +815,7 @@ class CyberSecurityAssistant:
             4. Common usage scenarios
             5. Security considerations and ethical usage reminder
             
-            Be detailed and provide real commands that would actually work in a security testing environment.
+            Be detailed and provide real commands that would actually work in a security testing environment.   *NOTE EXPLAIN EVERYTHING IS SHORT*
             """
             
             response = self.llm.invoke(prompt)
@@ -834,7 +834,7 @@ class CyberSecurityAssistant:
             2. Explain what the query does and why it's effective
             3. Note any specific operators used
             
-            Include a brief introduction explaining Google dorking, its legitimate security applications, and ethical considerations.
+            Include a brief introduction explaining Google dorking, its legitimate security applications, and ethical considerations.   *NOTE EXPLAIN EVERYTHING IS SHORT*
             
             Reminder: These are for educational purposes and security assessment only.
             """
@@ -863,7 +863,7 @@ class CyberSecurityAssistant:
             2. Common security issues or attack patterns in {sample_type} traffic
             3. How to identify anomalies or malicious activities
             4. Tools and techniques for monitoring this traffic type
-            5. Recommended security controls and best practices
+            5. Recommended security controls and best practices   *NOTE EXPLAIN EVERYTHING IS SHORT*
             """
             
             response = self.llm.invoke(prompt)
@@ -891,7 +891,7 @@ class CyberSecurityAssistant:
             6. Monitoring and enforcement mechanisms
             7. Review and update procedures
             
-            Format the policy in a professional, structured manner suitable for organizational use.
+            Format the policy in a professional, structured manner suitable for organizational use.   *NOTE EXPLAIN EVERYTHING IS SHORT*
             """
             
             response = self.llm.invoke(prompt)
@@ -923,7 +923,7 @@ class CyberSecurityAssistant:
             8. Recovery procedures (after attack)
             9. Relevant security tools and frameworks for defense
             
-            Keep your recommendations ethical and focused on defensive security.
+            Keep your recommendations ethical and focused on defensive security.   *NOTE EXPLAIN EVERYTHING IS SHORT*
             """
             
             response = self.llm.invoke(prompt)
@@ -1113,7 +1113,7 @@ class CyberSecurityAssistant:
             6. Mitigation strategies prioritized by risk
             7. Recommended security tools for testing
             
-            Present this as a professional vulnerability assessment report.
+            Present this as a professional vulnerability assessment report.   *NOTE EXPLAIN EVERYTHING IS SHORT*
             """
             
             response = self.llm.invoke(prompt)
@@ -1143,7 +1143,7 @@ class CyberSecurityAssistant:
             9. Documentation requirements
             10. Training recommendations
             
-            Format this as a complete incident response playbook that could be implemented by a {organization_size} organization.
+            Format this as a complete incident response playbook that could be implemented by a {organization_size} organization.   *NOTE EXPLAIN EVERYTHING IS SHORT*
             """
             
             response = self.llm.invoke(prompt)
@@ -1174,7 +1174,7 @@ class CyberSecurityAssistant:
             6. Recommend secure coding fixes with example code
             7. Suggest secure coding practices relevant to {language}
             
-            Format your response as a professional security code review report.
+            Format your response as a professional security code review report.   *NOTE EXPLAIN EVERYTHING IS SHORT*
             """
             
             response = self.llm.invoke(prompt)
@@ -1202,7 +1202,7 @@ class CyberSecurityAssistant:
             7. Learning objectives and security concepts demonstrated
             8. Suggested point value for a CTF competition
             
-            The challenge should be realistic, educational, and engaging while adhering to ethical standards.
+            The challenge should be realistic, educational, and engaging while adhering to ethical standards.   *NOTE EXPLAIN EVERYTHING IS SHORT*
             """
             
             response = self.llm.invoke(prompt)
@@ -2809,76 +2809,77 @@ def main():
                             st.markdown(result)
     elif tabs == 'Malware Analysis':
         st.title("Malware Analyzer")
-        tab1, tab2, tab3 = st.tabs(["📝 Paste Code", "📁 Upload Source File", "💾 Upload Binary"])
+        st.write("Only For PRO USERS")
+        # tab1, tab2, tab3 = st.tabs(["📝 Paste Code", "📁 Upload Source File", "💾 Upload Binary"])
 
-        with tab1:
-            code_input = st.text_area("Paste your code here:", height=300)
-            if st.button("🔍 Analyze Code", key="analyze_pasted") and code_input:
-                with st.spinner("🔄 Analyzing code..."):
-                    analysis_results = st.session_state.app.analyze_code(code_input)
-                    display_analysis_results(analysis_results)
-                    report_filename = st.session_state.app.create_analysis_report(analysis_results)
-                    with open(report_filename, "rb") as file:
-                        st.download_button(
-                            label="📥 Download Analysis Report",
-                            data=file,
-                            file_name=report_filename,
-                            mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                        )
-                    os.remove(report_filename)
+        # with tab1:
+        #     code_input = st.text_area("Paste your code here:", height=300)
+        #     if st.button("🔍 Analyze Code", key="analyze_pasted") and code_input:
+        #         with st.spinner("🔄 Analyzing code..."):
+        #             analysis_results = st.session_state.app.analyze_code(code_input)
+        #             display_analysis_results(analysis_results)
+        #             report_filename = st.session_state.app.create_analysis_report(analysis_results)
+        #             with open(report_filename, "rb") as file:
+        #                 st.download_button(
+        #                     label="📥 Download Analysis Report",
+        #                     data=file,
+        #                     file_name=report_filename,
+        #                     mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        #                 )
+        #             os.remove(report_filename)
 
-        with tab2:
-            uploaded_file = st.file_uploader("Choose a source code file", type=['py', 'js', 'java', 'cpp', 'cs', 'php', 'rb'], key="code_file")
-            if st.button("🔍 Analyze Source File", key="analyze_source") and uploaded_file:
-                with st.spinner("🔄 Analyzing source file..."):
-                    code_content = uploaded_file.read().decode()
-                    analysis_results = st.session_state.app.analyze_code(code_content)
-                    display_analysis_results(analysis_results)
-                    report_filename = st.session_state.app.create_analysis_report(analysis_results)
-                    with open(report_filename, "rb") as file:
-                        st.download_button(
-                            label="📥 Download Analysis Report",
-                            data=file,
-                            file_name=report_filename,
-                            mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                        )
-                    os.remove(report_filename)
+        # with tab2:
+        #     uploaded_file = st.file_uploader("Choose a source code file", type=['py', 'js', 'java', 'cpp', 'cs', 'php', 'rb'], key="code_file")
+        #     if st.button("🔍 Analyze Source File", key="analyze_source") and uploaded_file:
+        #         with st.spinner("🔄 Analyzing source file..."):
+        #             code_content = uploaded_file.read().decode()
+        #             analysis_results = st.session_state.app.analyze_code(code_content)
+        #             display_analysis_results(analysis_results)
+        #             report_filename = st.session_state.app.create_analysis_report(analysis_results)
+        #             with open(report_filename, "rb") as file:
+        #                 st.download_button(
+        #                     label="📥 Download Analysis Report",
+        #                     data=file,
+        #                     file_name=report_filename,
+        #                     mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        #                 )
+        #             os.remove(report_filename)
         
-        with tab3:
-            st.write("Upload a binary file (.exe) for security analysis")
-            uploaded_binary = st.file_uploader("Choose a binary file", type=['exe'], key="binary_file")
+        # with tab3:
+        #     st.write("Upload a binary file (.exe) for security analysis")
+        #     uploaded_binary = st.file_uploader("Choose a binary file", type=['exe'], key="binary_file")
             
-            if uploaded_binary:
-                st.info("Binary analysis will extract strings from the executable and analyze them for security indicators.")
+        #     if uploaded_binary:
+        #         st.info("Binary analysis will extract strings from the executable and analyze them for security indicators.")
             
-            if st.button("🔍 Analyze Binary", key="analyze_binary") and uploaded_binary:
-                with st.spinner("🔄 Extracting strings and analyzing binary..."):
-                    binary_data = uploaded_binary.read()
+        #     if st.button("🔍 Analyze Binary", key="analyze_binary") and uploaded_binary:
+        #         with st.spinner("🔄 Extracting strings and analyzing binary..."):
+        #             binary_data = uploaded_binary.read()
                     
-                    # Create expandable section to show extracted strings
-                    with st.expander("Extracted Strings Preview"):
-                        extracted_strings = st.session_state.app.extract_strings_from_binary(binary_data)
-                        st.text_area("Strings from binary", value=extracted_strings[:10000] + 
-                                    ("\n\n[Truncated...]" if len(extracted_strings) > 10000 else ""), 
-                                    height=300, disabled=True)
+        #             # Create expandable section to show extracted strings
+        #             with st.expander("Extracted Strings Preview"):
+        #                 extracted_strings = st.session_state.app.extract_strings_from_binary(binary_data)
+        #                 st.text_area("Strings from binary", value=extracted_strings[:10000] + 
+        #                             ("\n\n[Truncated...]" if len(extracted_strings) > 10000 else ""), 
+        #                             height=300, disabled=True)
                     
-                    analysis_results = st.session_state.app.analyze_binary(binary_data)
-                    st.subheader("Binary Analysis Results")
-                    display_analysis_results(analysis_results)
+        #             analysis_results = st.session_state.app.analyze_binary(binary_data)
+        #             st.subheader("Binary Analysis Results")
+        #             display_analysis_results(analysis_results)
                     
-                    report_filename = st.session_state.app.create_analysis_report(
-                        analysis_results, 
-                        title=f"Binary Security Analysis Report - {uploaded_binary.name}"
-                    )
+        #             report_filename = st.session_state.app.create_analysis_report(
+        #                 analysis_results, 
+        #                 title=f"Binary Security Analysis Report - {uploaded_binary.name}"
+        #             )
                     
-                    with open(report_filename, "rb") as file:
-                        st.download_button(
-                            label="📥 Download Binary Analysis Report",
-                            data=file,
-                            file_name=report_filename,
-                            mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                        )
-                    os.remove(report_filename)
+        #             with open(report_filename, "rb") as file:
+        #                 st.download_button(
+        #                     label="📥 Download Binary Analysis Report",
+        #                     data=file,
+        #                     file_name=report_filename,
+        #                     mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        #                 )
+        #             os.remove(report_filename)
 
 
 if __name__ == "__main__":
