@@ -120,15 +120,15 @@ def search_poc_reports(query):
     Search for Proof of Concept (PoC) exploits and vulnerability disclosure reports
     """
     try:
-        # Target sites known for security research, PoCs, and vulnerability disclosures
+        # Target sites known for  research, PoCs, and vulnerability disclosures
         poc_sites = [
             "site:github.com",
             "site:exploit-db.com",
             "site:cve.mitre.org",
             "site:nvd.nist.gov",
-            "site:packetstormsecurity.com",
+            "site:packetstorm.com",
             "site:seclists.org",
-            "site:securityfocus.com",
+            "site:focus.com",
             "site:rapid7.com/db",
             "site:vulners.com",
             "site:zerodayinitiative.com"
@@ -152,7 +152,7 @@ def search_poc_reports(query):
             f"{query} exploit proof of concept",
             f"{query} vulnerability disclosure",
             f"{query} CVE exploit",
-            f"{query} security advisory",
+            f"{query}  advisory",
             f"{query} PoC github"
         ]
         
@@ -160,7 +160,7 @@ def search_poc_reports(query):
             try:
                 for j in search(poc_query, tld="co.in", num=1, stop=1, pause=2):
                     # Filter for likely PoC/vulnerability report URLs
-                    if any(keyword in j.lower() for keyword in ['exploit', 'cve', 'vulnerability', 'poc', 'github.com', 'security', 'advisory']):
+                    if any(keyword in j.lower() for keyword in ['exploit', 'cve', 'vulnerability', 'poc', 'github.com', '', 'advisory']):
                         return f"PoC/Report found: {j}"
             except:
                 continue
@@ -198,9 +198,9 @@ def search_vulnerability_databases(query):
         return f"Error searching vulnerability databases: {str(e)}"
 
 
-def search_security_advisories(query):
+def search__advisories(query):
     """
-    Search for official security advisories and vendor disclosures
+    Search for official  advisories and vendor disclosures
     """
     try:
         advisory_sites = [
@@ -1224,7 +1224,7 @@ class CyberSecurityAssistant:
             9. Future trends or developments
             10. Resources for further learning
             
-            Make the explanation accessible but technically accurate, suitable for cybersecurity training.
+            Make the explanation accessible but technically accurate, suitable for cybersecurity training *NOTE EXPLAIN EVERYTHING IN SHORT*.
             """
             
             response = self.llm.invoke(prompt)
