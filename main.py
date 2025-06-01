@@ -629,7 +629,7 @@ class CyberSecurityAssistant:
             max_tokens=None,
             timeout=None,
             max_retries=2,
-            google_api_key="AIzaSyBnTUcOuWlxmQd71VAL6uActAT7Ua_CFAE",
+            google_api_key="AIzaSyDQPDBmS_FRuyzuWQdV7gcSBujE4wuR-bc",
         )
         # self.llm = ChatGroq(
         #     model="llama-3.3-70b-versatile",
