@@ -620,15 +620,25 @@ def display_analysis_results(analysis: Dict):
 
 class CyberSecurityAssistant:
     def __init__(self, groq_api_key):
+
         
-        self.llm = ChatGroq(
-            model="llama-3.3-70b-versatile",
+        self.llm = ChatXAI(
+            model="grok-beta",
             temperature=0.3,
             max_tokens=None,
             timeout=None,
             max_retries=2,
-            groq_api_key=groq_api_key,
+            xai_api_key="xai-Yq0yGQRwLOkh7eS744ByhWb2kzu1H0RRwA2InoZDgtI46UrHo8WPRKOJrdEyT67om1OTC2TYrmgbqEbA",
         )
+        
+        # self.llm = ChatGroq(
+        #     model="llama-3.3-70b-versatile",
+        #     temperature=0.3,
+        #     max_tokens=None,
+        #     timeout=None,
+        #     max_retries=2,
+        #     groq_api_key=groq_api_key,
+        # )
         
         self.prompt = ChatPromptTemplate.from_messages([
             (
