@@ -328,7 +328,7 @@ Requirements:
 5. Use "None identified" in findings array if no indicators are found
 6. Keep descriptions concise and focused on security implications
 
-Your  should be ONLY the JSON object with no additional text."""
+Your  should be ONLY the JSON object with no additional text and TRY TO KEEP THE TOKEN SIZE MINIMUM."""
         )
         
         self.analysis_chain = LLMChain(
