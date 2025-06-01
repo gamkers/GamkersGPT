@@ -654,7 +654,9 @@ class CyberSecurityAssistant:
                 1. Explain the concepts first
                 2. Outline the methodology
                 3. Share relevant code or commands with explanations
-                4. Highlight security considerations and ethical implications
+                4. Highlight security considerations and ethical implications 
+                *NOTE EXPLAIN EVERYTHING IS SHORT*
+
                 """
             ),
             ("human", "{query}")
