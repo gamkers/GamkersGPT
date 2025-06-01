@@ -27,121 +27,6 @@ from googlesearch import search
 
 
 
-# Rate limiting configuration
-MAX_API_CALLS = 10
-RESET_PERIOD_HOURS = 24  # Reset limit every 24 hours
-
-def get_user_id():
-    """Generate a unique user ID based on session"""
-    if 'user_id' not in st.session_state:
-        # Create a unique ID based on session info and timestamp
-        session_info = str(st.session_state) + str(time.time())
-        st.session_state.user_id = hashlib.md5(session_info.encode()).hexdigest()[:12]
-    return st.session_state.user_id
-
-def initialize_rate_limiter():
-    """Initialize rate limiting session state variables"""
-    if 'api_call_count' not in st.session_state:
-        st.session_state.api_call_count = 0
-    
-    if 'first_api_call_time' not in st.session_state:
-        st.session_state.first_api_call_time = None
-    
-    if 'rate_limit_exceeded' not in st.session_state:
-        st.session_state.rate_limit_exceeded = False
-
-def check_rate_limit_reset():
-    """Check if rate limit should be reset based on time"""
-    if st.session_state.first_api_call_time:
-        time_since_first_call = datetime.now() - st.session_state.first_api_call_time
-        if time_since_first_call > timedelta(hours=RESET_PERIOD_HOURS):
-            # Reset the rate limit
-            st.session_state.api_call_count = 0
-            st.session_state.first_api_call_time = None
-            st.session_state.rate_limit_exceeded = False
-            st.success("🔄 Your API usage limit has been reset!")
-
-def can_make_api_call():
-    """Check if user can make an API call"""
-    check_rate_limit_reset()
-    return st.session_state.api_call_count < MAX_API_CALLS
-
-def increment_api_call():
-    """Increment API call counter"""
-    if st.session_state.first_api_call_time is None:
-        st.session_state.first_api_call_time = datetime.now()
-    
-    st.session_state.api_call_count += 1
-    
-    if st.session_state.api_call_count >= MAX_API_CALLS:
-        st.session_state.rate_limit_exceeded = True
-
-def display_rate_limit_info():
-    """Display current rate limit status"""
-    remaining_calls = MAX_API_CALLS - st.session_state.api_call_count
-    
-    if st.session_state.first_api_call_time:
-        reset_time = st.session_state.first_api_call_time + timedelta(hours=RESET_PERIOD_HOURS)
-        time_until_reset = reset_time - datetime.now()
-        
-        if time_until_reset.total_seconds() > 0:
-            hours, remainder = divmod(int(time_until_reset.total_seconds()), 3600)
-            minutes, _ = divmod(remainder, 60)
-            reset_info = f"Resets in: {hours}h {minutes}m"
-        else:
-            reset_info = "Ready to reset"
-    else:
-        reset_info = "No calls made yet"
-    
-    # Create a nice info box
-    if remaining_calls > 5:
-        status_color = "🟢"
-    elif remaining_calls > 2:
-        status_color = "🟡"
-    else:
-        status_color = "🔴"
-    
-    st.sidebar.markdown(f"""
-    <div style="
-        background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-        padding: 1rem;
-        border-radius: 8px;
-        border-left: 4px solid #10b981;
-        margin-bottom: 1rem;
-    ">
-        <h4 style="margin: 0 0 0.5rem 0; color: #e2e8f0;">
-            {status_color} API Usage Limit
-        </h4>
-        <p style="margin: 0; color: #94a3b8;">
-            <strong>Remaining:</strong> {remaining_calls}/{MAX_API_CALLS} calls<br>
-            <strong>User ID:</strong> {get_user_id()}<br>
-            <strong>Status:</strong> {reset_info}
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
-
-def rate_limit_warning():
-    """Display rate limit exceeded warning"""
-    if st.session_state.rate_limit_exceeded:
-        reset_time = st.session_state.first_api_call_time + timedelta(hours=RESET_PERIOD_HOURS)
-        time_until_reset = reset_time - datetime.now()
-        
-        if time_until_reset.total_seconds() > 0:
-            hours, remainder = divmod(int(time_until_reset.total_seconds()), 3600)
-            minutes, _ = divmod(remainder, 60)
-            
-            st.error(f"""
-            🚫 **API Rate Limit Exceeded**
-            
-            You have reached the maximum of {MAX_API_CALLS} API calls per {RESET_PERIOD_HOURS} hours.
-            
-            **Time until reset:** {hours} hours and {minutes} minutes
-            
-            Please wait before making more requests or contact support for additional quota.
-            """)
-            return True
-    return False
-
 
 def search_youtube(query):
     try:
@@ -1528,10 +1413,6 @@ class CyberSecurityAssistant:
     
 def main():
 
-    initialize_rate_limiter()
-    
-    # Display rate limit info in sidebar
-    display_rate_limit_info()
 
     if "app" not in st.session_state:
         st.session_state.app = SecurityAnalysisApp()
