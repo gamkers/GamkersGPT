@@ -2047,7 +2047,7 @@ def main():
                 else:
                     # Add user message to chat
                     st.session_state.messages.append({"role": "user", "content": prompt})
-                    
+                    print(prompt)
                     # Set thinking state to true and rerun to show the animation
                     st.session_state.thinking = True
                     st.rerun()
