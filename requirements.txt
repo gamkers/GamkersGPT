@@ -10,3 +10,4 @@ youtube-search-python
 google
 langchain-google-genai
 langchain-xai
+langchain-community
