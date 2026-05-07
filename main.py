@@ -14,9 +14,9 @@ import xml.etree.ElementTree as ET
 from st_on_hover_tabs import on_hover_tabs
 import streamlit.components.v1 as components
 from typing import List, Dict
-from langchain.chains import LLMChain, ConversationChain
-from langchain.prompts import PromptTemplate
-from langchain.memory import ConversationBufferMemory
+from langchain_classic.chains import LLMChain, ConversationChain
+from langchain_classic.prompts import PromptTemplate
+from langchain_classic.memory import ConversationBufferMemory
 import json
 from docx import Document
 import subprocess
